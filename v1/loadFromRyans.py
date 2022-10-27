@@ -23,7 +23,13 @@ def get_product_data(url):
     price = soup.find('span', {'class': 'sp-block'}).getText('', True)[17:]
     image = soup.find('img', {'class': 'xzoom order-lg-last'}).get('src')
     category = soup.find('div', {'class': 'category-pagination-section'}).find_all('a')[1].getText('', True)
-    return {'title': title, 'regular_price': regular_price, 'price': price, 'image': image, 'category': category}
+    feature_title_arr = {}
+    for row in soup.find_all('div', {'class': 'row table-hr-remove'}):
+        feature_title = row.find('span', {'class': 'att-title'}).getText('', True)
+        feature_value = row.find('span', {'class': 'att-value'}).getText('', True)
+        feature_title_arr[feature_title] = feature_value
+
+    return {'title': title, 'regular_price': regular_price, 'price': price, 'image': image, 'category': category, 'feature_title_arr': feature_title_arr}
 
 
 
