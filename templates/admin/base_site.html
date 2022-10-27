@@ -1,0 +1,23 @@
+{% extends "admin/base.html" %}
+<!-- prettier-ignore -->
+{% block title %}{% if subtitle %}{{ subtitle }} | {% endif %}{{ title }} |
+    {{ site_title|default:_('Django site admin') }}{% endblock %}
+
+{% block branding %}
+<a href="{% url 'admin:index' %}" class="flex gap-4 items-center">
+    <picture>
+        <source
+            srcset="
+                https://static.snoweb.fr/media/icon-snoweb-dark-no-aspect.svg
+            "
+            media="(prefers-color-scheme: dark)"
+        />
+        <img
+            class="h-8 w-auto"
+            src="https://static.snoweb.fr/media/icon-snoweb-dark-no-aspect.svg"
+            alt="Snoweb Logo"
+        />
+    </picture>
+    <span class="ml-4 font-bold" style="color: #fff">{{ site_title }}</span>
+</a>
+{% endblock %} {% block nav-global %}{% endblock %}

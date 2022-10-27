@@ -1,0 +1,24 @@
+{% extends "admin/base_site.html" %} {% load i18n static %}
+<!-- prettier-ignore -->
+{% block extrastyle %}{{ block.super }} {% comment %}
+<link rel="stylesheet" type="text/css" href="{% static "admin/css/dashboard.css" %}">{% endcomment %} {% endblock %}
+<!-- prettier-ignore -->
+{% block coltype %}colMS{% endblock %}
+<!-- prettier-ignore -->
+{% block bodyclass %}{{ block.super }} dashboard{% endblock %}
+<!-- prettier-ignore -->
+{% block contentclass %}max-w-4xl mx-auto{% endblock %}
+<!-- prettier-ignore -->
+
+{% block breadcrumbs %}{% endblock %}
+<!-- prettier-ignore -->
+
+{% block nav-sidebar %}{% endblock %}
+<!-- prettier-ignore -->
+
+{% block content %}
+<div id="content-main" class="pt-6 flex-grow spacing-x-regular -my-2 -mx-2">
+    <!-- prettier-ignore -->
+    {% include "admin/app_list.html" with app_list=app_list show_changelinks=True with_section=True %}
+</div>
+{% endblock %}
