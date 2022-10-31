@@ -19,6 +19,8 @@
 {% block content %}
 <div id="content-main" class="pt-6 flex-grow spacing-x-regular -my-2 -mx-2">
     <!-- prettier-ignore -->
+    <a href="{%url 'refreshAllRecords'%}">Refresh Database</a>
+    <!-- prettier-ignore -->
     {% include "admin/app_list.html" with app_list=app_list show_changelinks=True with_section=True %}
 </div>
 {% endblock %}

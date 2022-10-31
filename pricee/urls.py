@@ -20,7 +20,7 @@ from v1.views import indexView
 urlpatterns = [
     path('', indexView, name='index'),
     path('admin/', admin.site.urls),
-    path('api/', include('v1.urls')),
+    path('api/v1/', include('v1.urls')),
 
 ]
 

@@ -39,7 +39,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'drf_yasg',
     'v1',
+    'rest_framework',
 ]
 
 MIDDLEWARE = [
@@ -78,9 +80,29 @@ WSGI_APPLICATION = 'pricee.wsgi.application'
 
 DATABASES = {
     'default': {
+        #postgresql
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'pricee',
+        'USER': 'fardeen',
+        'PASSWORD': 'fardeen',
+        'HOST': 'localhost',
+        'PORT': '5432',
+    },
+    'psql': {
+        #postgresql
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'railway',
+        'USER': 'postgres',
+        'PASSWORD': 'Zd92zoUyJQt9rznyNuHd',
+        'HOST': 'containers-us-west-67.railway.app',
+        'PORT': '5934',
+    },
+
+    'sqlite': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
     }
+
 }
 
 
