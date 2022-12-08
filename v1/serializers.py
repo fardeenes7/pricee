@@ -26,10 +26,18 @@ class FeatureSerializer(serializers.ModelSerializer):
         fields = ['name', 'value']
 
 class SubcategorySerializer(serializers.ModelSerializer):
-    category = serializers.StringRelatedField()
     class Meta:
         model = SubCategory
-        fields = ['name', 'category']
+        fields = ['name']
+
+
+class CategorySerializer(serializers.ModelSerializer):
+    subcategories = SubcategorySerializer(many=True, read_only=True)
+    #sub_categories = serializers.StringRelatedField(many=True, read_only=True)
+    #subcategorys = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
+    class Meta:
+        model = Category
+        fields = ['name', 'subcategories']
 
 
 class ProductSerializer(serializers.ModelSerializer):

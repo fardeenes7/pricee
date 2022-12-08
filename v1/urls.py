@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.urls import path, re_path
-from .views import refreshAllRecords, viewAllRecords, viewAllRecordsPagination
+from .views import *
 #from django.conf.urls import url
 
 
@@ -31,6 +31,8 @@ urlpatterns = [
     path('all/', viewAllRecords, name='viewAllRecords'),
     path('products/all/', viewAllRecordsPagination, name='viewAllRecordsPagination'),
     path('products/all/<int:page>/', viewAllRecordsPagination, name='viewAllRecordsPagination'),
+    path('categories/', CategoryList, name='CategoryList'),
+      path('subcategories/', SubCategoryList, name='SubCategoryList'),
     
 
 ]

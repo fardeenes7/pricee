@@ -3,8 +3,8 @@ import json
 from django.shortcuts import render, redirect
 from . import tasks
 from django.http import HttpResponse as HTTPResponse
-from .models import Product, Startech, Techland
-from .serializers import ProductSerializer
+from .models import Product, Startech, Techland, Ryans, Category, SubCategory, Feature
+from .serializers import *
 # Create your views here.
 
 #rest framework
@@ -46,3 +46,16 @@ def ViewProductDetail(request, product_id=-1):
         return Response(serializer.data)
     else:
         return Response({"error": "Product not found"})
+
+
+@api_view(['GET'])
+def CategoryList(request):
+    categories = Category.objects.all()
+    serializer = CategorySerializer(categories, many=True)
+    return Response(serializer.data)
+
+@api_view(['GET'])
+def SubCategoryList(request):
+    subcategories = SubCategory.objects.all()
+    serializer = SubcategorySerializer(subcategories, many=True)
+    return Response(serializer.data)
