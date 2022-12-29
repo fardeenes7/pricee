@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'drf_yasg',
     'v1',
     'rest_framework',
+
 ]
 
 MIDDLEWARE = [
@@ -177,3 +178,4 @@ TEMPLATE_DIRS = [
 
 # Redirect to login URL after logout (Default redirects to /accounts/login/)
 #LOGOUT_REDIRECT_URL = '/login'
+
