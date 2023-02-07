@@ -32,7 +32,7 @@ urlpatterns = [
     path('products/all/', viewAllRecordsPagination, name='viewAllRecordsPagination'),
     path('products/all/<int:page>/', viewAllRecordsPagination, name='viewAllRecordsPagination'),
     path('categories/', CategoryList, name='CategoryList'),
-      path('subcategories/', SubCategoryList, name='SubCategoryList'),
+   path('subcategories/', SubCategoryList, name='SubCategoryList'),
     
 
 ]
