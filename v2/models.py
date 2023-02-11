@@ -1,11 +1,75 @@
-from email.policy import default
-from enum import auto
 from django.db import models
 from datetime import datetime
 from django.dispatch import receiver
 from django.db.models.signals import post_delete
 from django.template.defaultfilters import slugify
 # Create your models here.
+
+class Shop(models.Model):
+    name = models.CharField(max_length=255)
+    href = models.CharField(max_length=511)
+    logo = models.ImageField(upload_to='logos', blank=True, null=True)
+    def save(self, *args, **kwargs):
+        self.slug = slugify(self.name)
+        super(Shop, self).save(*args, **kwargs)
+
+    def __str__(self):
+        return self.name
+
+
+class Product(models.Model):
+    name = models.CharField(max_length=511)
+    slug = models.SlugField(max_length=511, null=True, blank=True)
+    sub_category = models.ForeignKey('SubCategory', related_name='products', on_delete=models.CASCADE, null=True)
+    best_price = models.CharField(max_length=10, default=0)
+    brand = models.CharField(max_length=255, blank=True)
+    model = models.CharField(max_length=511, blank=True)
+    last_updated = models.DateTimeField(auto_now=True)
+
+
+class Link(models.Model):
+    shop = models.ForeignKey(Shop, related_name='links', on_delete=models.CASCADE)
+    product = models.ForeignKey('Product', related_name='links', on_delete=models.CASCADE)
+    href = models.CharField(max_length=511)
+    price = models.CharField(max_length=10, default=0)
+    last_updated = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.shop.name + ' - ' + self.product.name
+
+    def save(self, *args, **kwargs):
+        super(Link, self).save(*args, **kwargs)
+        self.product.save()
+
+    def delete(self, *args, **kwargs):
+        super(Link, self).delete(*args, **kwargs)
+        self.product.save()
+
+
+class Image(models.Model):
+    product = models.ForeignKey('Product', related_name='images', on_delete=models.CASCADE)
+    image = models.ImageField(upload_to='images/products', blank=True, null=True)
+
+    def __str__(self):
+        return self.product.name
+
+    def save(self, *args, **kwargs):
+        super(Image, self).save(*args, **kwargs)
+        self.product.save()
+
+    def delete(self, *args, **kwargs):
+        super(Image, self).delete(*args, **kwargs)
+        self.product.save()
+
+
+
+
+
+
+
+
+
+
 
 class Product(models.Model):
     name = models.CharField(max_length=511)

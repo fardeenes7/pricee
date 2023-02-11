@@ -1,7 +1,7 @@
 import concurrent.futures
 from bs4 import BeautifulSoup
 import requests
-from .models import Product, Category, SubCategory, Ryans, Feature
+from ..models import Product, Category, SubCategory, Ryans, Feature
 
 def get_urls_of_xml(xml_url):
     r = requests.get(xml_url)

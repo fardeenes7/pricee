@@ -2,7 +2,7 @@ import concurrent.futures
 from bs4 import BeautifulSoup
 import requests
 from datetime import datetime
-from .models import Product, Feature, Startech
+from ..models import Product, Feature, Startech
 
 
 def get_urls_of_xml(xml_url):
