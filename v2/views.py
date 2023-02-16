@@ -1,10 +1,9 @@
-from http.client import HTTPResponse
 import json
 import time
 from django.shortcuts import render, redirect
 from . import tasks
-from django.http import HttpResponse as HTTPResponse
-from .models import Product, Startech, Techland, Ryans, Category, SubCategory, Feature
+from django.http import HttpResponse
+from .models import Product, Category, SubCategory, Feature
 from .serializers import *
 # Create your views here.
 
@@ -33,9 +32,28 @@ def viewAllRecords(request):
 @api_view(['GET'])
 def viewAllRecordsPagination(request, page=1):
     products = Product.objects.all()
-    products = products.exclude(techland__isnull=True).exclude(startech__isnull=True).exclude(ryans__isnull=True)[(page-1)*16:page*16]
+    products = products[(page-1)*16:page*16]
     serializer = ProductListSerializer(products, many=True)
     return Response(serializer.data)
+
+
+@api_view(['GET'])
+def viewCategoryRecordsPagination(request, page=1, category="all"):
+    subcategories = SubCategory.objects.filter(category__slug=category) if category != "all" else SubCategory.objects.all()
+    products = Product.objects.filter(sub_category__in=subcategories)
+    products = products[(page-1)*16:page*16]
+    serializer = ProductListSerializer(products, many=True)
+    return Response(serializer.data)
+
+
+@api_view(['GET'])
+def viewSubCategoryRecordsPagination(request, page=1, subcategory="all"):
+    products = Product.objects.filter(sub_category__slug=subcategory) if subcategory != "all" else Product.objects.all()
+    products = products[(page-1)*16:page*16]
+    serializer = ProductListSerializer(products, many=True)
+    return Response(serializer.data)
+
+
 
 
 @api_view(['GET'])
@@ -65,20 +83,10 @@ def SubCategoryList(request):
 
 @api_view(['GET'])
 def Navigation(request):
-    categories = Category.objects.all()
+    exclude = ["Others", "Speaker", "Phone", "Home Appliance", "Home Appliances", "Digital Signage"]
+    categories = Category.objects.all().exclude(name__in=exclude).order_by('name')
     serializer = CategorySerializer(categories, many=True)
-    nav = {"categories": serializer.data, "shops": [
-        {
-            "name": "Techland",
-            "href": "techland"
-        },
-        {
-            "name": "Ryans",
-            "href": "ryans"
-        },
-        {
-            "name": "Startech",
-            "href": "startech"
-        }
-    ]}
+    shops = Shop.objects.all()
+    shopSerializer = ShopSerializer(shops, many=True)
+    nav = {"categories": serializer.data, "shops": shopSerializer.data}
     return Response(nav)

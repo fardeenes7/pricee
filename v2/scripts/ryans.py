@@ -1,44 +1,29 @@
 import concurrent.futures
 from bs4 import BeautifulSoup
 import requests
-from ..models import Product, Category, SubCategory, Ryans, Feature
+from django.template.defaultfilters import slugify
+from ..models import Product, Category, SubCategory, Link, Image, Feature, Shop
+from .functions import get_urls_of_xml, removeBrand, set_category, save_images, save_product
 
-def get_urls_of_xml(xml_url):
-    r = requests.get(xml_url)
-    soup = BeautifulSoup(r.text, features='xml')
-
-    links_arr = []
-    for link in soup.findAll('loc'):
-        linkstr = link.getText('', True)
-        links_arr.append(linkstr)
-
-    return links_arr
-
-
-def removeBrand(brand, model):
-    brand = brand.lower().replace(' ', '').replace('-', '').strip()
-    return model.lower().replace(brand, '').strip().upper()
-
-colors = ['black', 'white', 'red', 'blue', 'green', 'yellow', 'orange', 'purple', 'pink', 'brown', 'grey', 'gray', 'silver', 'gold', 'golden', 'beige', 'multicolor', 'clear', 'other', 'ruby', 'copper', 'lavender', 'lilac']
-def get_color(text):
-    text = text.lower()
-    for color in colors:
-        if color in text:
-            return color
-    return ""
-
+shop = Shop.objects.get_or_create(name="Ryans", href="https://www.ryanscomputers.com/")[0]
 
 def get_product_data(url):
     try:
         r = requests.get(url)
         soup = BeautifulSoup(r.text, features='lxml')
-        title = soup.find('div', {'class': 'product_content'}).find('h1').getText('', True)
+        name = soup.find('div', {'class': 'product_content'}).find('h1').getText('', True)
         regular_price = soup.find('span', {'class': 'rp-block'}).find('span').getText('', True)[17:].replace(',', '').strip() if soup.find('span', {'class': 'rp-block'}) else 0
         regular_price = 0 if regular_price == '' else int(regular_price)
         price = soup.find('span', {'class': 'sp-block'}).getText('', True)[17:].replace(',', '').replace("Coming Soon","").strip() if soup.find('span', {'class': 'sp-block'}) else 0
         price = 0 if price == "" else int(price)
-        image = soup.find('img', {'class': 'xzoom order-lg-last'}).get('src')
+        #image = soup.find('img', {'class': 'xzoom order-lg-last'}).get('src')
+        images = []
+        image_list = soup.find('div', {'class': 'xzoom-thumbs'}).find_all('a') if soup.find('div', {'class': 'xzoom-thumbs'}) else []
+        for image in image_list:
+            images.append(image.get('href'))
         category = soup.find('div', {'class': 'category-pagination-section'}).find_all('a')[1].getText('', True)
+        sub_cat_finder = soup.find('div', {'class': 'category-pagination-section'}).find_all('a')
+        subcategory = sub_cat_finder[3].getText('', True) if len(sub_cat_finder[3].getText('', True)) <= 20 else sub_cat_finder[2].getText('', True)
         brand = ""
         model = ""
         status = "In Stock" if price else "Out of Stock"
@@ -52,72 +37,41 @@ def get_product_data(url):
                 model = removeBrand(brand,feature_value)
             else:
                 features[feature_title] = feature_value
-        brand = brand if brand!="" else title.split()[0]
-        model = model if model!="" else title.split()[1]
+        brand = brand if brand!="" else name.split()[0]
+        model = model if model!="" else name.split()[1]
         #color = get_color(title)
-        if Ryans.objects.filter(link=url).exists():
-            ryans = Ryans.objects.get(link=url)
-            ryans.price = price
-            ryans.regular_price = regular_price
-            ryans.status = status
-            ryans.save()
-            product = Product.objects.get_or_create(ryans=ryans)
-            product.name = title
-            product.image = image
-            product.brand = brand
-            product.model = model
-            if product.sub_category is None:
-                category = category if len(category) <= 20 else "Others"
-                product.sub_category = SubCategory.objects.get_or_create(name=category, category=Category.objects.get_or_create(name=category)[0])[0]
-            product.save()
-        elif Product.objects.filter(brand=brand, model=model).exists():
-            ryans = Ryans.objects.create(link=url, price=price, regular_price=regular_price, status=status)
-            ryans.save()
-            product = Product.objects.get(brand=brand, model=model)
-            product.ryans = ryans
-            product.save()
-        else:
-            ryans = Ryans.objects.create(link=url, price=price, regular_price=regular_price, status=status)
-            ryans.save()
-            product = Product.objects.create(name=title, image=image, brand=brand, model=model, ryans=ryans, sub_category=SubCategory.objects.get_or_create(name=category, category=Category.objects.get_or_create(name=category)[0])[0])
-            product.save()
+        
+        subcategory = set_category(category, subcategory)
+
+        product = save_product(brand, model, name, subcategory, shop, url, price, status)
+        save_images(product, images)
 
         for f1, f2 in features.items():
-            if not Feature.objects.filter(product=product, name=f1).exists():
-                feature = Feature.objects.create(product=product, name=f1, value=f2)
-                feature.save()
-        print("Loaded: " + title)
+            try:
+                feature = Feature.objects.get_or_create(product=product, name=f1)[0]
+            except:
+                feature = Feature.objects.filter(product=product, name=f1)[0]
+            feature.value = f2
+            feature.save()
+        print("Loaded: " + name)
     except Exception as e:
         print("Error loading "+ url)
         print(e)
-        """
-        ryans, ryans_created = Ryans.objects.get_or_create(link=url, defaults={'price': price, 'regular_price': regular_price, 'status': status})
-        product, product_created = Product.objects.get_or_create(ryans=ryans, brand=brand, model=model, defaults={'name': title, 'image': image})
-        if not product_created:
-            product.ryans = ryans
-            product.name = title
-            product.image = image
-            product.brand = brand
-            product.model = model
 
-        if product.sub_category is None:
-            category = category if len(category) <= 20 else "Others"
-            sub_category, sub_category_created = SubCategory.objects.get_or_create(name=category, defaults={'category': Category.objects.get_or_create(name=category)[0]})
-            product.sub_category = sub_category
 
-        product.save()
-        for f1, f2 in features.items():
-            Feature.objects.get_or_create(product=product, name=f1, defaults={'value': f2})
-        print("Loaded: " + title)
-    except Exception as e:
-        print("Error loading "+ url)
-        print(e)
-"""
+test_data = [
+    "https://www.ryanscomputers.com/intel-13th-gen-raptor-lake-core-i7-13700-lga1700-socket-processor",
+    "https://www.ryanscomputers.com/corsair-hydro-series-h150-360mm-rgb-liquid-cpu-cooler",
+    "https://www.ryanscomputers.com/hp-m22f-215-inch-fhd-ips-monitor",
+    "https://www.ryanscomputers.com/msi-mag-b660m-mortar-max-wi-fi-6e-ddr4-intel-gaming-motherboard"
+
+]
 
 
 def load_from_ryans():
     print("Loading from Ryans")
-    links_data_arr = get_urls_of_xml("https://www.ryanscomputers.com/product-sitemap.xml")
+    links_data_arr = get_urls_of_xml("https://www.ryanscomputers.com/product-sitemap.xml", "xml")
+    # links_data_arr = test_data
     with concurrent.futures.ThreadPoolExecutor(max_workers=8) as executor:
         executor.map(get_product_data, links_data_arr)
     print("Loading from Ryans Complete")

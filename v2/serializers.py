@@ -3,22 +3,10 @@ from .models import *
 
 
 
-class StartechSerializer(serializers.ModelSerializer):
+class ShopSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Startech
-        fields = ['link', 'price', 'regular_price', 'status', 'last_updated']
-
-
-class RyansSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Ryans
-        fields = ['link', 'price', 'regular_price', 'status', 'last_updated']
-
-class TechlandSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Techland
-        fields = ['link', 'price', 'regular_price', 'status', 'last_updated']
-
+        model = Shop
+        fields = ['name', 'href', 'logo']
 
 class FeatureSerializer(serializers.ModelSerializer):
     class Meta:
@@ -40,21 +28,34 @@ class SubCategoryListSerializer(serializers.ModelSerializer):
 
 
 class CategorySerializer(serializers.ModelSerializer):
-    subcategories = SubCategoryListSerializer(many=True, read_only=True)
+    sub_categories = SubCategoryListSerializer(many=True, read_only=True)
     class Meta:
         model = Category
-        fields = ['name', 'slug', 'subcategories']
+        fields = ['name', 'slug', 'sub_categories']
         
-    def to_representation(self, instance):
-        representation = super().to_representation(instance)
-        return representation
 
 
 
+class ImageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Image
+        fields = ['href']
+
+class ShopSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Shop
+        fields = ['name', 'href', 'logo', 'slug']
+
+
+class LinkSerializer(serializers.ModelSerializer):
+    shop = ShopSerializer()
+    class Meta:
+        model = Link
+        fields = ['shop', 'href', 'price', 'status']
 
 class ProductListSerializer(serializers.ModelSerializer):
     sub_category = SubcategorySerializer()
-    
+    image = ImageSerializer(many=False, read_only=True)
     class Meta:
         model = Product
         fields = ['name', 'slug', 'sub_category', 'best_price', 'brand', 'model', 'image']
@@ -64,12 +65,8 @@ class ProductListSerializer(serializers.ModelSerializer):
 class ProductSerializer(serializers.ModelSerializer):
     features = FeatureSerializer(many=True, read_only=True)
     sub_category = SubcategorySerializer()
-    startech = StartechSerializer()
-    ryans = RyansSerializer()
-    techland = TechlandSerializer()
-    
     class Meta:
         model = Product
-        fields = ['name', 'sub_category', 'best_price', 'brand', 'model', 'image', 'startech', 'ryans', 'techland', 'features']
+        fields = ['name', 'sub_category', 'best_price', 'brand', 'model', 'images', 'links', 'features']
         depth = 2
 

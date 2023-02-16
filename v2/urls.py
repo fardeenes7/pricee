@@ -31,6 +31,9 @@ urlpatterns = [
    path('all/', viewAllRecords, name='viewAllRecords'),
    path('products/all/', viewAllRecordsPagination, name='viewAllRecordsPagination'),
    path('products/all/<int:page>/', viewAllRecordsPagination, name='viewAllRecordsPagination'),
+   path('products/category/<str:category>/<int:page>', viewCategoryRecordsPagination, name='viewCategoryRecordsPagination'),
+   path('products/subcategory/<str:subcategory>/<int:page>', viewSubCategoryRecordsPagination, name='viewSubCategoryRecordsPagination'),
+   
    path('products/<str:product_slug>/', ViewProductDetail, name='ViewProductDetail'),
    path('categories/', CategoryList, name='CategoryList'),
    path('subcategories/', SubCategoryList, name='SubCategoryList'),

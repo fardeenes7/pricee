@@ -1,34 +1,10 @@
 import concurrent.futures
 from bs4 import BeautifulSoup
 import requests
-from datetime import datetime
-from ..models import Product, Feature, Startech
+from ..models import Feature, Shop
+from .functions import get_urls_of_xml, removeBrand, set_category, save_images, save_product
 
-
-def get_urls_of_xml(xml_url):
-    r = requests.get(xml_url)
-    soup = BeautifulSoup(r.text, features='xml')
-    links_arr = []
-    for link in soup.findAll('loc'):
-        linkstr = link.getText('', True)
-        links_arr.append(linkstr)
-
-    return links_arr
-
-
-def removeBrand(brand, model):
-    brand = brand.lower().replace(' ', '').replace('-', '').strip()
-    return model.lower().replace(brand, '').strip().upper()
-
-colors = ['black', 'white', 'red', 'green', 'yellow', 'orange', 'purple', 'pink', 'brown', 'grey', 'gray', 'silver', 'gold', 'golden', 'beige', 'multicolor', 'clear', 'other', 'ruby', 'copper', 'lavender', 'lilac', 'bluetooth', 'blue', 'rose']
-def get_color(text):
-    text = text.lower()
-    for color in colors:
-        if color in text:
-            if color=='bluetooth':
-                return ""
-            return color
-    return ""
+shop = Shop.objects.get_or_create(name="Startech", href="https://www.startech.com.bd/")[0]
 
 
 def get_product_data(url):
@@ -50,82 +26,52 @@ def get_product_data(url):
         status = soup.find('td', {'class': 'product-info-data product-status'}).text if soup.find('td', {'class': 'product-info-data product-status'}) else ""
         brand = soup.find('td', {'class': 'product-info-data product-brand'}).text if soup.find('td', {'class': 'product-info-data product-brand'}) else ""
         model =""
-        model_container = soup.find('div', class_='short-description')
+        model_container = soup.find('div', {'class':'short-description'})
         for m in model_container.findAll('li'):
             if m.text[:5] == 'Model':
                 model = removeBrand(brand, m.text[7:])
-        image = soup.find('img', {'class': 'main-img'})['src'] if soup.find('img', {'class': 'main-img'}) else ""
+        images = [soup.find('img', {'class': 'main-img'})['src']] if soup.find('img', {'class': 'main-img'}) else ""
+
+        category = soup.find('ul', {'class': 'breadcrumb'}).findAll('a')[1].find('span').text if soup.find('ul', {'class': 'breadcrumb'}).findAll('a')[1] else ""
+        subcategory = soup.find('ul', {'class': 'breadcrumb'}).findAll('a')[2].find('span').text if soup.find('ul', {'class': 'breadcrumb'}).findAll('a')[2] else ""
         brand = brand if brand!="" else name.split(' ')[0]
         model = model if model!="" else name.split(' ')[1]
         #color = get_color(name)
 
-        if Startech.objects.filter(link=url).exists():
-            startech = Startech.objects.get(link=url)
-            startech.price = price
-            startech.regular_price = regular_price
-            startech.status = status
-            startech.save()
-            product = startech.product
-            product.name = name
-            product.brand = brand
-            product.model = model
-            product.image = image
-            product.save()
-        elif Product.objects.filter(brand=brand, model=model).exists():
-            startech = Startech.objects.create(link=url, price=price, regular_price=regular_price, status=status)
-            startech.save()
-            product = Product.objects.get(brand=brand, model=model)
-            product.startech = startech
-            product.save()
-        else:
-            startech = Startech.objects.create(link=url, price=price, regular_price=regular_price, status=status)
-            startech.save()
-            product = Product.objects.create(name=name, brand=brand, model=model, image=image, startech=startech)
-            product.save()
+        subcategory = set_category(category, subcategory)
+
+        product = save_product(brand, model, name, subcategory, shop, url, price, status)
+        save_images(product, images)
+        
         for a,b in zip(soup.findAll('td', {'class': 'name'}), soup.findAll('td', {'class': 'value'}), ):
-            if Feature.objects.filter(product=product, name=a.text).exists():
-                feature = Feature.objects.get(product=product, name=a.text)
-                feature.value = b.text
-                feature.save()
-            else:
-                feature = Feature.objects.create(product=product, name=a.text, value=b.text)
-                feature.save()
+            try:
+                feature = Feature.objects.get_or_create(product=product, name=a.text)[0]
+            except:
+                feature = Feature.objects.filter(product=product, name=a.text)[0]
+            feature.value = b.text
+            feature.save()
+        
         print("Loaded: " + name)
     except Exception as e:
         print("Error loading " + url)
         print(e)
-        
-        """
-        startech, created = Startech.objects.get_or_create(link=url, defaults={'price': price, 'regular_price': regular_price, 'status': status})
-        product, product_created = Product.objects.get_or_create(startech=startech, brand=brand, model=model, defaults={'name': title, 'image': image})
 
-        if not created:
-            startech.price = price
-            startech.regular_price = regular_price
-            startech.status = status
-            startech.save()
-            product.name = name
-            product.brand = brand
-            product.model = model
-            product.image = image
-            product.save()
-        
-        feature_data = [{'product': product, 'name': a.text, 'value': b.text} for a,b in zip(soup.findAll('td', {'class': 'name'}), soup.findAll('td', {'class': 'value'}))]
-        Feature.objects.bulk_create([Feature(**data) for data in feature_data if not Feature.objects.filter(product=product, name=data['name']).exists()])
-
-        print("Loaded: " + name)
-    except Exception as e:
-        print("Error loading " + url)
-        print(e)
-  """
+test_data = [
+    "https://www.startech.com.bd/intel-13th-gen-core-i7-13700-processor",
+    "https://www.startech.com.bd/corsair-h150-liquid-cpu-cooler",
+    "https://www.startech.com.bd/hp-m22f-22-inch-monitor",
+    "https://www.startech.com.bd/msi-mag-b660m-mortar-wifi-ddr4-12th-gen-motherboard",
+]
 
 
 def load_from_startech():
     print("Loading from startech")
-    links_data_arr = get_urls_of_xml("https://www.startech.com.bd/sitemap.xml")
+    links_data_arr = get_urls_of_xml("https://www.startech.com.bd/sitemap.xml", "xml")
+    # links_data_arr = test_data
     print("Total links found: " + str(len(links_data_arr)))
     with concurrent.futures.ThreadPoolExecutor(max_workers=8) as executor:
-        executor.map(get_product_data, links_data_arr[1336:])
+        #executor.map(get_product_data, links_data_arr[1336:])
+        executor.map(get_product_data, links_data_arr)
     #for link in links_data_arr[1336:1350]:
         #get_product_data(link)
 

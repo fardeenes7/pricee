@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Product, Feature, Startech, Ryans, Techland, SubCategory, Category
+from .models import Product, Feature, SubCategory, Category, Link
 
 from .tasks import refresh_records, clean_categories
 # Register your models here.
@@ -9,23 +9,15 @@ from .tasks import refresh_records, clean_categories
 
 class ProductAdmin(admin.ModelAdmin):
     #list_display = ['title', 'status']
-    list_display = ['name', 'slug', 'sub_category','brand', 'model', 'best_price', 'startech', 'ryans', 'techland']
+    list_display = ['name', 'slug', 'sub_category','brand', 'model', 'best_price']
     #ordering = ['title']
     #change_list_template = 'product_change_list.html'
     actions = [refresh_records]
 
 
-class TechlandAdmin(admin.ModelAdmin):
-    list_display = ['link', 'price', 'regular_price', 'status', 'last_updated']
-    ordering = ['last_updated']
-
-class StartechAdmin(admin.ModelAdmin):
-    list_display = ['link', 'price', 'regular_price', 'status', 'last_updated']
-    ordering = ['last_updated']
-
-class RyansAdmin(admin.ModelAdmin):
-    list_display = ['link', 'price', 'regular_price', 'status', 'last_updated']
-    ordering = ['last_updated']
+class LinkAdmin(admin.ModelAdmin):
+    list_display = ['product', 'shop', 'price', 'status']
+    ordering = ['product']
 
 
 class CategoryAdmin(admin.ModelAdmin):
@@ -42,9 +34,7 @@ class SubCategoryAdmin(admin.ModelAdmin):
 admin.site.register(Product, ProductAdmin)
 
 admin.site.register(Feature)
-admin.site.register(Startech, StartechAdmin)
-admin.site.register(Ryans, RyansAdmin)
-admin.site.register(Techland, TechlandAdmin)
+admin.site.register(Link, LinkAdmin)
 admin.site.register(SubCategory, SubCategoryAdmin)
 admin.site.register(Category, CategoryAdmin)
 
