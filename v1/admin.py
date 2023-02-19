@@ -38,7 +38,7 @@ class SubCategoryAdmin(admin.ModelAdmin):
     list_display = ['category', 'name', 'slug']
     ordering = ['category']
     
-
+"""
 admin.site.register(Product, ProductAdmin)
 
 admin.site.register(Feature)
@@ -48,7 +48,7 @@ admin.site.register(Techland, TechlandAdmin)
 admin.site.register(SubCategory, SubCategoryAdmin)
 admin.site.register(Category, CategoryAdmin)
 
-
+"""
 
 
 admin.site.site_header = "Pricee Admin"

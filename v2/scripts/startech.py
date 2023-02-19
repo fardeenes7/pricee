@@ -4,6 +4,13 @@ import requests
 from ..models import Feature, Shop
 from .functions import get_urls_of_xml, removeBrand, set_category, save_images, save_product
 
+# 
+import os
+from dotenv import load_dotenv
+load_dotenv()
+DEBUG = os.environ.get('DEBUG')
+
+
 shop = Shop.objects.get_or_create(name="Startech", href="https://www.startech.com.bd/")[0]
 
 
@@ -69,8 +76,11 @@ def load_from_startech():
     links_data_arr = get_urls_of_xml("https://www.startech.com.bd/sitemap.xml", "xml")
     # links_data_arr = test_data
     print("Total links found: " + str(len(links_data_arr)))
+    if DEBUG == 'True':
+        links_data_arr = links_data_arr[1336:1436]
+    else:
+        links_data_arr = links_data_arr[1336:]
     with concurrent.futures.ThreadPoolExecutor(max_workers=8) as executor:
-        #executor.map(get_product_data, links_data_arr[1336:])
         executor.map(get_product_data, links_data_arr)
     #for link in links_data_arr[1336:1350]:
         #get_product_data(link)

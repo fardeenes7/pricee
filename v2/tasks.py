@@ -193,10 +193,12 @@ def cleancategories():
     return HttpResponse("Done")
 
 
-
 @shared_task
 def refreshAllRecords():
-    return loadAll()
+    print("Refreshing all records")
+    loadAll()
+    return HttpResponse("Done")
+
 
 
 def loadAll():
