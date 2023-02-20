@@ -41,6 +41,9 @@ class ImageSerializer(serializers.ModelSerializer):
         model = Image
         fields = ['href']
 
+    def to_representation(self, instance):
+        return super().to_representation(instance)
+
 class ShopSerializer(serializers.ModelSerializer):
     class Meta:
         model = Shop
@@ -55,11 +58,18 @@ class LinkSerializer(serializers.ModelSerializer):
 
 class ProductListSerializer(serializers.ModelSerializer):
     sub_category = SubcategorySerializer()
-    image = ImageSerializer(many=False, read_only=True)
+    image = serializers.SerializerMethodField()
     class Meta:
         model = Product
         fields = ['name', 'slug', 'sub_category', 'best_price', 'brand', 'model', 'image']
         depth = 2
+
+    def get_image(self, product):
+        images = product.images.all()
+        if images.exists():
+            return ImageSerializer(images.first()).data
+        else:
+            return None
 
 
 class ProductSerializer(serializers.ModelSerializer):
@@ -70,3 +80,10 @@ class ProductSerializer(serializers.ModelSerializer):
         fields = ['name', 'sub_category', 'best_price', 'brand', 'model', 'images', 'links', 'features']
         depth = 2
 
+
+# Landing Page Serializers
+
+class LandingCategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Category
+        fields = ['name', 'slug']

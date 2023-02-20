@@ -116,23 +116,9 @@
                     {% endblock %}
     </ul>
     {% endif %}{% endif %} {% endblock %}
-    <form
-        {%
-        if
-        has_file_field
-        %}enctype="multipart/form-data"
-        {%
-        endif
-        %}{%
-        if
-        form_url
-        %}action="{{ form_url }}"
-        {%
-        endif
-        %}method="post"
-        id="{{ opts.model_name }}_form"
-        novalidate
-    >
+    <!-- prettier-ignore -->
+    <form {% if has_file_field %}enctype="multipart/form-data" {% endif %}{% if form_url %}action="{{ form_url }}" {% endif %}method="post" id="{{ opts.model_name }}_form" novalidate >
+
         {% csrf_token %}{% block form_top %}{% endblock %}
         <div>
             <!-- prettier-ignore -->

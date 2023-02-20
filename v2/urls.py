@@ -38,6 +38,8 @@ urlpatterns = [
    path('categories/', CategoryList, name='CategoryList'),
    path('subcategories/', SubCategoryList, name='SubCategoryList'),
    path('navigation/', Navigation, name='Navigation'),
+
+   path('landing', Landing, name='Landing'),
     
 
 ]
