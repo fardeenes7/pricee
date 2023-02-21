@@ -29,6 +29,7 @@ urlpatterns = [
    re_path(r'^redoc/$', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
    path('refreshAllRecords/', refreshAllRecords, name='refreshAllRecords'),
    path('all/', viewAllRecords, name='viewAllRecords'),
+   path('products', ProductViewSet.as_view({'get':'list'}), name='productviewset'),
    path('products/all/', viewAllRecordsPagination, name='viewAllRecordsPagination'),
    path('products/all/<int:page>/', viewAllRecordsPagination, name='viewAllRecordsPagination'),
    path('products/category/<str:category>/<int:page>', viewCategoryRecordsPagination, name='viewCategoryRecordsPagination'),

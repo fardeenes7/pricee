@@ -5,6 +5,7 @@ from . import tasks
 from django.http import HttpResponse
 from .models import Product, Category, SubCategory, Feature
 from .serializers import *
+from rest_framework import viewsets
 # Create your views here.
 
 #rest framework
@@ -36,6 +37,14 @@ def viewAllRecordsPagination(request, page=1):
     serializer = ProductListSerializer(products, many=True)
     return Response(serializer.data)
 
+class ProductViewSet(viewsets.ModelViewSet):
+    queryset = Product.objects.all().exclude(best_price=0)
+    serializer_class = ProductListSerializer
+
+    def get_queryset(self):
+        qs = Product.objects.all().exclude(best_price=0)
+
+        return qs
 
 @api_view(['GET'])
 def viewCategoryRecordsPagination(request, page=1, category="all"):
