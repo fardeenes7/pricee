@@ -42,9 +42,14 @@ class ProductViewSet(viewsets.ModelViewSet):
     serializer_class = ProductListSerializer
 
     def get_queryset(self):
-        qs = Product.objects.all().exclude(best_price=0)
-
-        return qs
+        queryset = Product.objects.all().exclude(best_price=0)
+        category = self.request.query_params.get('category', None)
+        subcategory = self.request.query_params.get('subcategory', None)
+        if category is not None:
+            queryset = queryset.filter(sub_category__category__slug=category)
+        if subcategory is not None:
+            queryset = queryset.filter(sub_category__slug=subcategory)
+        return queryset
 
 @api_view(['GET'])
 def viewCategoryRecordsPagination(request, page=1, category="all"):
