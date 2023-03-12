@@ -44,7 +44,7 @@ class ProductViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         queryset = Product.objects.all().exclude(best_price=0)
         category = self.request.query_params.get('category', None)
-        subcategory = self.request.query_params.get('subcategory', None)
+        subcategory = self.request.query_params.get('sub_category', None)
         if category is not None:
             queryset = queryset.filter(sub_category__category__slug=category)
         if subcategory is not None:
@@ -115,10 +115,6 @@ def Landing(request):
     bannerAds = []
     bannerAds.append(BannerAd.objects.filter(active=True, size='3x1').order_by('-id')[0])
     bannerAds.append(BannerAd.objects.filter(active=True, size='1x1').order_by('-id')[0])
-    # bannerAds.append(BannerAd.objects.filter(active=True, size='1x1').order_by('-id')[1])
-    # bannerAds.append(BannerAd.objects.filter(active=True, size='1x1').order_by('-id')[0])
-    # bannerAds.append(BannerAd.objects.filter(active=True, size='3x1').order_by('-id')[1])
-    # bannerAds.append(BannerAd.objects.filter(active=True, size='1x1').order_by('-id')[1])
     bannerAdSerializer = BannerAdSerializer(bannerAds, many=True)
 
     categories = Category.objects.all()[:8]

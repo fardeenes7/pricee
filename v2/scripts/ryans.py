@@ -64,15 +64,6 @@ def get_product_data(url):
         print(e)
 
 
-test_data = [
-    "https://www.ryanscomputers.com/intel-13th-gen-raptor-lake-core-i7-13700-lga1700-socket-processor",
-    "https://www.ryanscomputers.com/corsair-hydro-series-h150-360mm-rgb-liquid-cpu-cooler",
-    "https://www.ryanscomputers.com/hp-m22f-215-inch-fhd-ips-monitor",
-    "https://www.ryanscomputers.com/msi-mag-b660m-mortar-max-wi-fi-6e-ddr4-intel-gaming-motherboard"
-
-]
-
-
 def load_from_ryans():
     print("Loading from Ryans")
     

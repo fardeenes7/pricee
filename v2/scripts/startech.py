@@ -82,9 +82,5 @@ def load_from_startech():
         links_data_arr = links_data_arr[1336:]
     with concurrent.futures.ThreadPoolExecutor(max_workers=8) as executor:
         executor.map(get_product_data, links_data_arr)
-    #for link in links_data_arr[1336:1350]:
-        #get_product_data(link)
 
     print(f"Loading from Startech Complete")
-
-#print(f"--- Scraped and saved {int(len(product_details_data))} products ---")
