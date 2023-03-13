@@ -74,7 +74,7 @@ def viewSubCategoryRecordsPagination(request, page=1, subcategory="all"):
 def ViewProductDetail(request, product_slug=-1):
     ifExists = Product.objects.filter(slug=product_slug).exists()
     if ifExists:
-        product = Product.objects.get(slug=product_slug)
+        product = Product.objects.filter(slug=product_slug)[0]
         serializer = ProductSerializer(product, many=False)
         return Response(serializer.data)
     else:

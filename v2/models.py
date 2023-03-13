@@ -6,7 +6,7 @@ from django.template.defaultfilters import slugify
 class Shop(models.Model):
     name = models.CharField(max_length=255)
     href = models.CharField(max_length=511)
-    logo = models.ImageField(upload_to='logos', blank=True, null=True)
+    logo = models.URLField(max_length=511, blank=True, null=True)
     slug = models.SlugField(max_length=255, null=True, blank=True)
     
     def save(self, *args, **kwargs):

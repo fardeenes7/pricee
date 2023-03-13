@@ -41,8 +41,8 @@ class ImageSerializer(serializers.ModelSerializer):
         model = Image
         fields = ['href']
 
-    def to_representation(self, instance):
-        return super().to_representation(instance)
+    # def to_representation(self, instance):
+    #     return super().to_representation(instance)
 
 class ShopSerializer(serializers.ModelSerializer):
     class Meta:
@@ -72,13 +72,37 @@ class ProductListSerializer(serializers.ModelSerializer):
             return None
 
 
+class SuggestionsSerializer(serializers.ModelSerializer):
+    image = serializers.SerializerMethodField()
+    class Meta:
+        model = Product
+        fields = ['name', 'slug', 'best_price', 'brand', 'model', 'image']
+        depth = 2
+
+    def get_image(self, product):
+        images = product.images.all()
+        if images.exists():
+            return ImageSerializer(images.first()).data
+        else:
+            return None
+
+
 class ProductSerializer(serializers.ModelSerializer):
     features = FeatureSerializer(many=True, read_only=True)
     sub_category = SubcategorySerializer()
+    images = ImageSerializer(many=True, read_only=True)
+    suggestions = serializers.SerializerMethodField()
     class Meta:
         model = Product
-        fields = ['name', 'sub_category', 'best_price', 'brand', 'model', 'images', 'links', 'features']
+        fields = ['name', 'sub_category', 'best_price', 'brand', 'model', 'images', 'links', 'features', 'suggestions']
         depth = 2
+    
+    def get_suggestions(self, product):
+        suggestions = Product.objects.filter(sub_category=product.sub_category).exclude(id=product.id).order_by('?')[:6]
+        return SuggestionsSerializer(suggestions, many=True).data
+
+
+
 
 
 # Landing Page Serializers

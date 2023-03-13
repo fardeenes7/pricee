@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Product, Feature, SubCategory, Category, Link
+from .models import Product, Feature, SubCategory, Category, Link, Shop
 
 from .tasks import refresh_records, clean_categories
 # Register your models here.
@@ -37,6 +37,7 @@ admin.site.register(Feature)
 admin.site.register(Link, LinkAdmin)
 admin.site.register(SubCategory, SubCategoryAdmin)
 admin.site.register(Category, CategoryAdmin)
+admin.site.register(Shop)
 
 
 
