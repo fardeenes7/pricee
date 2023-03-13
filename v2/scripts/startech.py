@@ -11,7 +11,7 @@ load_dotenv()
 DEBUG = os.environ.get('DEBUG')
 
 
-shop = Shop.objects.get_or_create(name="Startech", href="https://www.startech.com.bd/")[0]
+# shop = Shop.objects.get_or_create(name="Startech", href="https://www.startech.com.bd/")[0]
 
 
 def get_product_data(url):

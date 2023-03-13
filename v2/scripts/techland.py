@@ -10,7 +10,7 @@ from dotenv import load_dotenv
 load_dotenv()
 DEBUG = os.environ.get('DEBUG')
 
-shop = Shop.objects.get_or_create(name="Techland", href="https://www.techlandbd.com/")[0]
+# shop = Shop.objects.get_or_create(name="Techland", href="https://www.techlandbd.com/")[0]
 
 # session = requests.Session()
 def get_product_data(url):
