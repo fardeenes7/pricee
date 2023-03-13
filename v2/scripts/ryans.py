@@ -2,7 +2,7 @@ import concurrent.futures
 from bs4 import BeautifulSoup
 import requests
 from django.template.defaultfilters import slugify
-from ..models import Product, Category, SubCategory, Link, Image, Feature, Shop
+from v2.models import Product, Category, SubCategory, Link, Image, Feature, Shop
 from .functions import get_urls_of_xml, removeBrand, set_category, save_images, save_product
 
 import os
