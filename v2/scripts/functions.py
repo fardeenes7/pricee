@@ -23,7 +23,10 @@ def removeBrand(brand, model):
 
 def set_category(category_name, sub_category_name):
     if SubCategory.objects.filter(name=category_name).exists():
-        return SubCategory.objects.get(name=category_name)
+        try:
+            return SubCategory.objects.get(name=category_name)
+        except:
+            return SubCategory.objects.filter(name=category_name)[0]
     else:
         if len(category_name) <= 20:
             try:

@@ -5,7 +5,7 @@ from celery import task, shared_task
 from .scripts.startech import load_from_startech, get_product_data as get_startech_product_data
 from .scripts.techland import load_from_techland, get_product_data as get_techland_product_data
 from .scripts.ryans import load_from_ryans, get_product_data as get_ryans_product_data
-from .scripts.new import load_from_techland, get_product_data as get_new_product_data
+# from .scripts.new import load_from_techland, get_product_data as get_new_product_data
 from .models import Category, SubCategory, Link, Product
 
 def cleancategories():
@@ -194,7 +194,7 @@ def cleancategories():
     return HttpResponse("Done")
 
 
-# @shared_task
+@shared_task
 def refreshAllRecords():
     print("Refreshing all records")
     loadAll()
@@ -205,8 +205,8 @@ def refreshAllRecords():
 def loadAll():
     start = datetime.now()
     load_from_techland()
-    # load_from_startech()
-    #load_from_ryans()
+    load_from_startech()
+    load_from_ryans()
     cleancategories()
     end = datetime.now()
     time_taken = (end - start).total_seconds()
@@ -243,8 +243,6 @@ def refresh_records(modeladmin, request, queryset):
 @admin.action(description='Clean categories')
 def clean_categories(modeladmin, request, queryset):
     cleancategories()
-
-
 
 
 #celery -A pricee worker -l info

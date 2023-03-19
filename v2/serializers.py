@@ -54,7 +54,17 @@ class LinkSerializer(serializers.ModelSerializer):
     shop = ShopSerializer()
     class Meta:
         model = Link
-        fields = ['shop', 'href', 'price', 'status']
+        fields = ['shop', 'href', 'price', 'status', 'last_updated', 'title']
+
+    def to_representation(self, instance):
+        formatted_last_updated = instance.last_updated.strftime("%d %b %Y %H:%M:%S")
+        return {
+            'shop': ShopSerializer(instance.shop).data,
+            'href': instance.href,
+            'price': instance.price,
+            'status': instance.status,
+            'last_updated': formatted_last_updated
+        }
 
 class ProductListSerializer(serializers.ModelSerializer):
     sub_category = SubcategorySerializer()
@@ -92,6 +102,7 @@ class ProductSerializer(serializers.ModelSerializer):
     sub_category = SubcategorySerializer()
     images = ImageSerializer(many=True, read_only=True)
     suggestions = serializers.SerializerMethodField()
+    links = LinkSerializer(many=True, read_only=True)
     class Meta:
         model = Product
         fields = ['name', 'sub_category', 'best_price', 'brand', 'model', 'images', 'links', 'features', 'suggestions']
@@ -100,6 +111,7 @@ class ProductSerializer(serializers.ModelSerializer):
     def get_suggestions(self, product):
         suggestions = Product.objects.filter(sub_category=product.sub_category).exclude(id=product.id).order_by('?')[:6]
         return SuggestionsSerializer(suggestions, many=True).data
+
 
 
 

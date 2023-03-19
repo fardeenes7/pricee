@@ -11,7 +11,7 @@ load_dotenv()
 DEBUG = os.environ.get('DEBUG')
 
 
-# shop = Shop.objects.get_or_create(name="Startech", href="https://www.startech.com.bd/")[0]
+shop = Shop.objects.get_or_create(name="Startech", href="https://www.startech.com.bd/")[0]
 
 
 def get_product_data(url):
@@ -77,9 +77,9 @@ def load_from_startech():
     # links_data_arr = test_data
     print("Total links found: " + str(len(links_data_arr)))
     if DEBUG == 'True':
-        links_data_arr = links_data_arr[1336:1436]
+        links_data_arr = links_data_arr[1412:1512]
     else:
-        links_data_arr = links_data_arr[1336:]
+        links_data_arr = links_data_arr[1412:]
     with concurrent.futures.ThreadPoolExecutor(max_workers=8) as executor:
         executor.map(get_product_data, links_data_arr)
 

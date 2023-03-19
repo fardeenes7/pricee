@@ -10,7 +10,7 @@ from dotenv import load_dotenv
 load_dotenv()
 DEBUG = os.environ.get('DEBUG')
 
-# shop = Shop.objects.get_or_create(name="Techland", href="https://www.techlandbd.com/")[0]
+shop = Shop.objects.get_or_create(name="Techland", href="https://www.techlandbd.com/")[0]
 
 # session = requests.Session()
 def get_product_data(url):
@@ -69,17 +69,6 @@ def get_product_data(url):
     except Exception as e:
         print("Error loading " + url)
         print(e)
-
-
-
-test_data = [
-    "https://www.techlandbd.com/intel-core-i7-13700-16-core-24-thread-11th-gen-processor",
-    "https://www.techlandbd.com/corsair-h150-rgb-cpu-cooler?search=corsair%20h150&description=true",
-    "https://www.techlandbd.com/hp-m22f-ips-monitor?search=HP%20M22f&description=true",
-    "https://www.techlandbd.com/msi-mag-b660m-mortar-max-wifi-ddr4-motherboard?search=msi%20mag%20b660m&description=true",
-
-]
-
 
 
 
