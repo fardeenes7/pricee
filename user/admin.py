@@ -8,13 +8,13 @@ from .models import User
 
 
 class CustomUserAdmin(UserAdmin):
-    list_display = ['email', 'username', 'first_name', 'last_name', 'account_type', 'is_superuser', 'is_staff', 'is_active', 'date_joined']
+    list_display = ['email', 'username', 'name', 'account_type', 'is_superuser', 'is_staff', 'is_active', 'date_joined']
     fieldsets = (
-        (None, {'fields': ('email', 'username','password', 'first_name', 'last_name')}),
+        (None, {'fields': ('email', 'username','password')}),
         ('Permissions', {'fields': ('is_superuser', 'is_staff', 'is_active')}),
         ('Personal', {'fields': ('bio', 'account_type')}),
     )
-    search_fields = ['email', 'username', 'first_name', 'last_name']
+    search_fields = ['email', 'username']
     list_filter = ['account_type', 'is_superuser', 'is_staff', 'is_active']
     ordering = ['email']
     

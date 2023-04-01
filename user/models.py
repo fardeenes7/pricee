@@ -2,6 +2,9 @@ from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
+
+from rest_framework_simplejwt.tokens import RefreshToken
+
 # Create your models here.
 
 class CustomUserManager(BaseUserManager):
@@ -20,7 +23,6 @@ class CustomUserManager(BaseUserManager):
         extra_fields.setdefault('is_active', True)
         extra_fields.setdefault('account_type', 'admin')
         
-
         if extra_fields.get('is_superuser') is not True:
             raise ValueError(_('Superuser must have is_superuser=True.'))
         if extra_fields.get('is_staff') is not True:
@@ -36,13 +38,18 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         ('moderator', 'Moderator'),
         ('user', 'User'),
     )
+    AUTH_PROVIDERS = (
+        ('email', 'Email'),
+        ('google', 'Google'),
+        ('facebook', 'Facebook'),
+    )
     email = models.EmailField(_('email address'), unique=True)
-    username = models.CharField(_('user name'), max_length=30, blank=True)
-    first_name = models.CharField(_('first name'), max_length=30, blank=True)
-    last_name = models.CharField(_('last name'), max_length=30, blank=True)
+    username = models.CharField(_('username'), max_length=30, blank=True)
+    name = models.CharField(_('name'), max_length=30, blank=True)
     bio = models.TextField(_('bio'), max_length=500, blank=True)
-    account_type = models.CharField(_('account type'), max_length=30, blank=True, choices=ACCOUNT_TYPE)
-
+    account_type = models.CharField(_('account type'), max_length=30, blank=True, default='user', choices=ACCOUNT_TYPE)
+    auth_provider = models.CharField(_('auth provider'), max_length=30, blank=True, default='email', choices=AUTH_PROVIDERS)
+    profile_pic = models.ImageField(_('profile picture'), upload_to='user/profile_pics', blank=True, null=True)
 
     is_superuser = models.BooleanField(_('superuser status'), default=False,
         help_text=_('Designates that this user has all permissions without explicitly assigning them.'))        
@@ -55,7 +62,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     objects = CustomUserManager()
     
     USERNAME_FIELD = 'email'
-    # REQUIRED_FIELDS = ['user_name']
+    REQUIRED_FIELDS = ['username']
 
     class Meta:
         verbose_name = _('user')
@@ -69,7 +76,14 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         return self.email
 
     def get_full_name(self):
-        return self.email
+        return self.name
+
+    def tokens(self):
+        refresh = RefreshToken.for_user(self)
+        return {
+            'refresh': str(refresh),
+            'access': str(refresh.access_token)
+        }
 
 
 class User(CustomUser):

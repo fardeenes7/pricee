@@ -1,5 +1,5 @@
 from django.contrib import admin
-from django.urls import path, re_path
+from django.urls import path, re_path, include
 from .views import *
 #from django.conf.urls import url
 
@@ -41,6 +41,8 @@ urlpatterns = [
    path('navigation/', Navigation, name='Navigation'),
 
    path('landing', Landing, name='Landing'),
-    
 
+
+   #users api
+   path('user/', include('user.urls')),
 ]
