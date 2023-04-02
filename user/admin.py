@@ -8,7 +8,7 @@ from .models import User
 
 
 class CustomUserAdmin(UserAdmin):
-    list_display = ['email', 'username', 'name', 'account_type', 'is_superuser', 'is_staff', 'is_active', 'date_joined']
+    list_display = ['email', 'username', 'name', 'account_type', 'is_superuser', 'is_staff', 'is_active', 'date_joined', 'auth_provider']
     fieldsets = (
         (None, {'fields': ('email', 'username','password')}),
         ('Permissions', {'fields': ('is_superuser', 'is_staff', 'is_active')}),

@@ -3,19 +3,20 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
 from rest_framework.generics import GenericAPIView
-from .serializers import GoogleSocialAuthSerializer
-
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from .serializers import UserSerializer
 from rest_framework_simplejwt.tokens import RefreshToken, OutstandingToken
 
+from .serializers import SocialAuthSerializer, EmailRegisterSerializer, EmailLoginSerializer
+
+
 
 
 # Create your views here.
 
-class GoogleSocialAuth(GenericAPIView):
-    serializer_class = GoogleSocialAuthSerializer
+class SocialAuth(GenericAPIView):
+    serializer_class = SocialAuthSerializer
 
     def post(self, request):
         serializer = self.serializer_class(data=request.data)
@@ -50,3 +51,26 @@ class Logout(APIView):
         except Exception as e:
             print(e)
             return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+class EmailRegister(GenericAPIView):
+    serializer_class = EmailRegisterSerializer
+    permission_classes = [AllowAny, ]
+
+    def post(self, request):
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        data = serializer.validate(request.data)
+
+        return Response(data, status=status.HTTP_200_OK)
+       
+
+class EmailLogin(GenericAPIView):
+    serializer_class = EmailLoginSerializer
+    permission_classes = [AllowAny, ]
+
+    def post(self, request):
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        data = serializer.validate(request.data)
+        return Response(data, status=status.HTTP_200_OK)
