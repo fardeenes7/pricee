@@ -105,7 +105,7 @@ class ProductSerializer(serializers.ModelSerializer):
     links = LinkSerializer(many=True, read_only=True)
     class Meta:
         model = Product
-        fields = ['name', 'sub_category', 'best_price', 'brand', 'model', 'images', 'links', 'features', 'suggestions']
+        fields = ['id', 'name', 'sub_category', 'best_price', 'brand', 'model', 'images', 'links', 'features', 'suggestions']
         depth = 2
     
     def get_suggestions(self, product):

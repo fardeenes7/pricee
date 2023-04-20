@@ -22,6 +22,7 @@ INSTALLED_APPS = [
     'user',
     'v1',
     'v2',
+    'analytics',
     'rest_framework',
 ]
 

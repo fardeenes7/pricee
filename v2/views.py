@@ -6,7 +6,12 @@ from django.http import HttpResponse
 from .models import Product, Category, SubCategory, Feature
 from .serializers import *
 from rest_framework import viewsets
-# Create your views here.
+from rest_framework import status
+
+
+
+#Analytics
+from analytics.models import ProductView, CategoryView
 
 #rest framework
 from rest_framework.decorators import api_view
@@ -75,10 +80,27 @@ def ViewProductDetail(request, product_slug=-1):
     ifExists = Product.objects.filter(slug=product_slug).exists()
     if ifExists:
         product = Product.objects.filter(slug=product_slug)[0]
+        user = request.user if request.user.is_authenticated else None
+        # ProductView.objects.create(product=product, user=user)
+        # CategoryView.objects.create(category=product.sub_category, user=user)
         serializer = ProductSerializer(product, many=False)
         return Response(serializer.data)
     else:
         return Response({"error": "Product not found"})
+
+@api_view(['GET'])
+def RecordProductView(request, id):
+    ifExists = Product.objects.filter(id=id).exists()
+    if ifExists:
+        product = Product.objects.filter(id=id)[0]
+        user = request.user if request.user.is_authenticated else None
+        ProductView.objects.create(product=product, user=user)
+        CategoryView.objects.create(category=product.sub_category, user=user)
+        return Response({"status":200}, status=status.HTTP_200_OK)
+    else:
+        return Response({"status": 400}, status=status.HTTP_400_BAD_REQUEST)
+
+
 
 
 @api_view(['GET'])
