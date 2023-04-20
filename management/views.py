@@ -2,8 +2,13 @@ from django.shortcuts import render
 from .models import BannerAd
 from django.utils import timezone
 from rest_framework import generics
+from rest_framework.views import APIView
 from rest_framework.response import Response
 from .serializers import BannerAdSerializer
+from rest_framework.permissions import IsAuthenticated
+from rest_framework import status
+
+
 
 
 # Create your views here.
@@ -61,3 +66,17 @@ class BannerAdAPIView(generics.GenericAPIView):
         # If we get here, we couldn't find any ads to display.
         serializer = self.get_serializer(data, many=True)
         return Response(serializer.data)
+
+
+
+class checkAdminPermissionView(APIView):
+    # permission_classes = [IsAuthenticated, ]
+
+    def get(self, request):
+        if request.user.is_staff:
+            data = {'is_staff': True}
+            return Response(data, status=status.HTTP_200_OK)
+        else:
+            data = {'is_staff': False}
+            return Response(data, status=status.HTTP_401_UNAUTHORIZED)
+            

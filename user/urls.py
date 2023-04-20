@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import SocialAuth, UserView, Logout, EmailRegister, EmailLogin
+from .views import SocialAuth, UserView, Logout, EmailRegister, EmailLogin, ResetPassword, UserUpdateView
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
@@ -14,4 +14,9 @@ urlpatterns = [
    path('auth/register', EmailRegister.as_view(), name='email_register'),
    path('auth/login', EmailLogin.as_view(), name='email_login'),
    path('auth/logout', Logout.as_view(), name='logout'),
+   path('auth/reset-password', ResetPassword.as_view(), name='reset_password'),
+
+   path('profile', UserView.as_view(), name='user'),
+   path('profile/update', UserUpdateView.as_view(), name='user')
+
 ]

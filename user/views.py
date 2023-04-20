@@ -7,6 +7,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from .serializers import UserSerializer
 from rest_framework_simplejwt.tokens import RefreshToken, OutstandingToken
+from rest_framework.parsers import MultiPartParser, FormParser
+
 
 from .serializers import SocialAuthSerializer, EmailRegisterSerializer, EmailLoginSerializer
 
@@ -29,12 +31,37 @@ class SocialAuth(GenericAPIView):
 
 # create a class to return user details using access token
 class UserView(APIView):
-    # authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated, ]
 
     def get(self, request):
         serializer = UserSerializer(request.user)
         return Response(serializer.data)
+
+
+class UserUpdateView(APIView):
+    permission_classes = [IsAuthenticated, ]
+    # parser_classes = [MultiPartParser]
+
+    def post(self, request):
+        print(request.data)
+        # if type(request.data['profile_pic']) == str:
+        #     profile_pic = request.data.get('profile_pic', None)
+        # else:
+        #     None
+        # if profile_pic is None:
+        request_data = request.data.copy()
+        request_data.pop('profile_pic', None)
+        serializer = UserSerializer(request.user, data=request_data, partial=True)
+        # else:
+        #     serializer = UserSerializer(request.user, data=request.data)
+        
+            
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 class Logout(APIView):
     permission_classes = [IsAuthenticated, ]
@@ -73,4 +100,23 @@ class EmailLogin(GenericAPIView):
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
         data = serializer.validate(request.data)
-        return Response(data, status=status.HTTP_200_OK)
+        try:
+            if data['error']:
+                return Response(data, status=status.HTTP_400_BAD_REQUEST)
+        except:
+            return Response(data, status=status.HTTP_200_OK)
+
+
+class ResetPassword(GenericAPIView):
+    serializer_class = EmailLoginSerializer
+    permission_classes = [AllowAny, ]
+
+    def post(self, request):
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        data = serializer.validate(request.data)
+        try:
+            if data['error']:
+                return Response(data, status=status.HTTP_400_BAD_REQUEST)
+        except:
+            return Response(data, status=status.HTTP_200_OK)

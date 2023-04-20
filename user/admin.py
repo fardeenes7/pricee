@@ -12,7 +12,7 @@ class CustomUserAdmin(UserAdmin):
     fieldsets = (
         (None, {'fields': ('email', 'username','password')}),
         ('Permissions', {'fields': ('is_superuser', 'is_staff', 'is_active')}),
-        ('Personal', {'fields': ('bio', 'account_type')}),
+        ('Personal', {'fields': ('bio', 'account_type', 'profile_pic')}),
     )
     search_fields = ['email', 'username']
     list_filter = ['account_type', 'is_superuser', 'is_staff', 'is_active']
