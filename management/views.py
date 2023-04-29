@@ -4,9 +4,14 @@ from django.utils import timezone
 from rest_framework import generics
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from .serializers import BannerAdSerializer
+from .serializers import BannerAdSerializer, manageProductListSerializer, ProductDetailSerializer
 from rest_framework.permissions import IsAuthenticated
-from rest_framework import status
+from rest_framework import status, viewsets
+from rest_framework.pagination import PageNumberPagination
+
+from v2.models import Product
+
+
 
 
 
@@ -80,3 +85,12 @@ class checkAdminPermissionView(APIView):
             data = {'is_staff': False}
             return Response(data, status=status.HTTP_401_UNAUTHORIZED)
             
+class CustomPageSizePagination(PageNumberPagination):
+    page_size = 10
+    page_size_query_param = 'page_size'
+    max_page_size = 100
+
+class ProductViewSet(viewsets.ModelViewSet):
+    serializer_class = manageProductListSerializer
+    pagination_class = CustomPageSizePagination
+    queryset = Product.objects.all().order_by('-id')

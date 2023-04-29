@@ -21,6 +21,7 @@ schema_view = get_schema_view(
 
 urlpatterns = [
    path('bannerads/', BannerAdAPIView.as_view(), name='bannerads'),
-   path('permission/',checkAdminPermissionView.as_view(), name='check_permission')
+   path('permission/',checkAdminPermissionView.as_view(), name='check_permission'),
+   path('products', ProductViewSet.as_view({'get':'list'}), name='products'),
 
 ]

@@ -23,6 +23,8 @@ urlpatterns = [
     
     path('api/v1/', include('v1.urls')),
     path('api/v2/', include('v2.urls')),
+
+    path('api/manage/', include('management.urls')),
 ]
 
 # add static files 
