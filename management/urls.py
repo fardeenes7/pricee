@@ -23,5 +23,6 @@ urlpatterns = [
    path('bannerads/', BannerAdAPIView.as_view(), name='bannerads'),
    path('permission/',checkAdminPermissionView.as_view(), name='check_permission'),
    path('products', ProductViewSet.as_view({'get':'list'}), name='products'),
-
+   path('users', UserViewSet.as_view({'get':'list'}), name='users'),  
+   path('users/<int:pk>', UserDetailView.as_view(), name='user_detail'), 
 ]

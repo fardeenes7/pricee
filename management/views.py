@@ -4,12 +4,13 @@ from django.utils import timezone
 from rest_framework import generics
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from .serializers import BannerAdSerializer, manageProductListSerializer, ProductDetailSerializer
+from .serializers import BannerAdSerializer, manageProductListSerializer, manageUserListSerializer, manageUserDetailSerializer
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import status, viewsets
 from rest_framework.pagination import PageNumberPagination
 
 from v2.models import Product
+from user.models import User
 
 
 
@@ -94,3 +95,18 @@ class ProductViewSet(viewsets.ModelViewSet):
     serializer_class = manageProductListSerializer
     pagination_class = CustomPageSizePagination
     queryset = Product.objects.all().order_by('-id')
+
+
+class UserViewSet(viewsets.ModelViewSet):
+    serializer_class = manageUserListSerializer
+    pagination_class = CustomPageSizePagination
+    queryset = User.objects.all().order_by('-id')
+
+
+class UserDetailView(APIView):
+    # permission_classes = [IsAuthenticated, ]
+
+    def get(self, request, pk):
+        user = User.objects.get(pk=pk)
+        serializer = manageUserDetailSerializer(user)
+        return Response(serializer.data, status=status.HTTP_200_OK)

@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from .models import *
 from v2.models import Image, Product
+from user.models import User
 
 
 class BannerAdSerializer(serializers.ModelSerializer):
@@ -20,7 +21,7 @@ class manageProductListSerializer(serializers.ModelSerializer):
     image = serializers.SerializerMethodField()
     class Meta:
         model = Product
-        fields = ['name', 'slug', 'sub_category', 'best_price', 'brand', 'model', 'image']
+        fields = ['id','name', 'slug', 'sub_category', 'best_price', 'brand', 'model', 'image']
         depth = 2
 
     def get_image(self, product):
@@ -31,8 +32,17 @@ class manageProductListSerializer(serializers.ModelSerializer):
             return None
 
 
-class ProductDetailSerializer(serializers.ModelSerializer):
+
+class manageUserListSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Product
-        fields = ['name', 'slug', 'sub_category', 'best_price', 'brand', 'model', 'images', 'num_views']
-        depth = 2
+        model = User
+        fields = ['id', 'username','profile_pic','account_type', 'email', 'name', 'is_active']
+        depth = 1
+
+
+class manageUserDetailSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ["id", "username", "email", "name", "bio", "account_type", "auth_provider", "profile_pic", "is_superuser", "is_staff", "is_active", "date_joined", "groups", "user_permissions", "last_login"]
+        depth = 1
+
