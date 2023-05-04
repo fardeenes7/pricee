@@ -46,3 +46,8 @@ class manageUserDetailSerializer(serializers.ModelSerializer):
         fields = ["id", "username", "email", "name", "bio", "account_type", "auth_provider", "profile_pic", "is_superuser", "is_staff", "is_active", "date_joined", "groups", "user_permissions", "last_login"]
         depth = 1
 
+class manageUserCreationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ["id", "username", "email", "name", "bio", "account_type", "auth_provider", "profile_pic", "is_superuser", "is_staff", "is_active", "date_joined", "groups", "user_permissions", "last_login"]
+        depth = 1

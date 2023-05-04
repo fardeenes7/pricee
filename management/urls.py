@@ -1,9 +1,12 @@
 from django.urls import path, re_path
 from .views import *
 
+
 from rest_framework import permissions
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
+
+
 
 schema_view = get_schema_view(
    openapi.Info(
@@ -24,5 +27,6 @@ urlpatterns = [
    path('permission/',checkAdminPermissionView.as_view(), name='check_permission'),
    path('products', ProductViewSet.as_view({'get':'list'}), name='products'),
    path('users', UserViewSet.as_view({'get':'list'}), name='users'),  
-   path('users/<int:pk>', UserDetailView.as_view(), name='user_detail'), 
+   path('users/new', UserCreateView.as_view(), name='user_new'),  
+   path('users/<int:pk>', UserDetailView.as_view(), name='user_detail')
 ]

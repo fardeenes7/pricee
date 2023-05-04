@@ -14,6 +14,15 @@ class CustomUserManager(BaseUserManager):
         email = self.normalize_email(email)
         user = self.model(email=email, **extra_fields)
         user.set_password(password)
+        if extra_fields.get('is_superuser') is True:
+            user.is_active = True
+            user.is_staff = True
+            user.is_superuser = True
+            user.account_type = 'admin'
+        if extra_fields.get('account_type') in ['moderator', 'admin']:
+            user.is_active = True
+            user.is_staff = True
+            user.account_type = extra_fields.get('account_type')
         user.save()
         return user
 
