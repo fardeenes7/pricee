@@ -69,9 +69,10 @@ class LinkSerializer(serializers.ModelSerializer):
 class ProductListSerializer(serializers.ModelSerializer):
     sub_category = SubcategorySerializer()
     image = serializers.SerializerMethodField()
+    num_views = serializers.IntegerField()
     class Meta:
         model = Product
-        fields = ['name', 'slug', 'sub_category', 'best_price', 'brand', 'model', 'image']
+        fields = ['name', 'slug', 'sub_category', 'best_price', 'brand', 'model', 'image', 'num_views']
         depth = 2
 
     def get_image(self, product):

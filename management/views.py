@@ -4,9 +4,15 @@ from django.utils import timezone
 from rest_framework import generics
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from .serializers import BannerAdSerializer
+from .serializers import *
 from rest_framework.permissions import IsAuthenticated
-from rest_framework import status
+from rest_framework import status, viewsets
+from rest_framework.pagination import PageNumberPagination
+
+from v2.models import Product
+from user.models import User
+
+
 
 
 
@@ -80,3 +86,77 @@ class checkAdminPermissionView(APIView):
             data = {'is_staff': False}
             return Response(data, status=status.HTTP_401_UNAUTHORIZED)
             
+class CustomPageSizePagination(PageNumberPagination):
+    page_size = 10
+    page_size_query_param = 'page_size'
+    max_page_size = 100
+
+class ProductViewSet(viewsets.ModelViewSet):
+    serializer_class = manageProductListSerializer
+    pagination_class = CustomPageSizePagination
+    queryset = Product.objects.all().order_by('-id')
+
+
+class UserViewSet(viewsets.ModelViewSet):
+    serializer_class = manageUserListSerializer
+    pagination_class = CustomPageSizePagination
+    queryset = User.objects.all().order_by('-id')
+
+
+
+from user.auth.register import register_email_user
+
+class UserCreateView(APIView):
+    # permission_classes = [IsAuthenticated, ]
+    def post(self, request):
+        data = register_email_user(request.data)
+        return Response(data, status=status.HTTP_200_OK)
+
+
+# class UserCreateView(generics.CreateAPIView):
+    queryset = User.objects.all()
+    serializer_class = manageUserCreationSerializer
+    # permission_classes = [IsAuthenticated, ]
+
+    # def post(self, request):
+    #     #check email or username already exist
+    #     if User.objects.filter(email=request.data['email']).exists():
+    #         data = {'email': 'Email already exist'}
+    #     elif User.objects.filter(username=request.data['username']).exists():
+    #         data = {'username': 'Username already exist'}
+    #     else:
+    #         serializer = manageUserListSerializer(data=request.data)
+    #         if serializer.is_valid():
+    #             serializer.save()
+    #             data = serializer.data
+    #             return Response(data, status=status.HTTP_201_CREATED)
+    #         else:
+    #             data = serializer.errors
+    #             return Response(data, status=status.HTTP_400_BAD_REQUEST)
+        
+    #     return Response(data, status=status.HTTP_400_BAD_REQUEST)
+
+class UserDetailView(APIView):
+    # permission_classes = [IsAuthenticated, ]
+
+    def get(self, request, pk):
+        user = User.objects.get(pk=pk)
+        serializer = manageUserDetailSerializer(user)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def delete(self, request, pk):
+        return Response(status=status.HTTP_200_OK)
+
+
+class UserDeleteView(APIView):
+    # permission_classes = [IsAuthenticated, ]
+
+    # def get(self, request, pk):
+    #     user = User.objects.get(pk=pk)
+    #     user.delete()
+    #     return Response(status=status.HTTP_204_NO_CONTENT)
+    #     return Response(status=status.HTTP_400_BAD_REQUEST)
+    def get(self, request, pk):
+        user = User.objects.get(pk=pk)
+        user.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)

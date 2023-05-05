@@ -63,6 +63,17 @@ class UserUpdateView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+class UserDeleteView(APIView):
+    permission_classes=[IsAuthenticated]
+
+    def delete(self, request):
+        user = request.user
+        if user:
+            user.delete()
+            return Response(status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
 class Logout(APIView):
     permission_classes = [IsAuthenticated, ]
     def post(self, request):

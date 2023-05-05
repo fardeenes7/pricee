@@ -5,7 +5,7 @@ from user.models import User
 # Create your models here.
 
 class ProductView(models.Model):
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, related_name='viewcount', on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     date = models.DateField(auto_now_add=True)
 
@@ -18,7 +18,7 @@ class ProductView(models.Model):
         ordering = ['-date']
 
 class CategoryView(models.Model):
-    category = models.ForeignKey(SubCategory, on_delete=models.CASCADE)
+    category = models.ForeignKey(SubCategory, related_name='categoryviewcount', on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     date = models.DateField(auto_now_add=True)
 
