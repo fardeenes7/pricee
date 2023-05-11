@@ -38,6 +38,7 @@ urlpatterns = [
    
    path('products/<str:product_slug>/', ViewProductDetail, name='ViewProductDetail'),
    path('products/record_view/<int:id>/', RecordProductView, name='RecordProductView'),
+   path('products/link_click/<int:id>/', RecordLinkClick, name='RecordLinkClick'),
 
 
    path('categories/', CategoryList, name='CategoryList'),

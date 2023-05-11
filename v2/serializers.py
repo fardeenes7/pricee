@@ -54,11 +54,12 @@ class LinkSerializer(serializers.ModelSerializer):
     shop = ShopSerializer()
     class Meta:
         model = Link
-        fields = ['shop', 'href', 'price', 'status', 'last_updated', 'title']
+        fields = ['id', 'shop', 'href', 'price', 'status', 'last_updated', 'title']
 
     def to_representation(self, instance):
         formatted_last_updated = instance.last_updated.strftime("%d %b %Y %H:%M:%S")
         return {
+            'id': instance.id,
             'shop': ShopSerializer(instance.shop).data,
             'href': instance.href,
             'price': instance.price,

@@ -4,3 +4,4 @@ from .models import *
 
 admin.site.register(ProductView)
 admin.site.register(CategoryView)
+admin.site.register(LinkClick)

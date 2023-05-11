@@ -97,6 +97,19 @@ class ProductViewSet(viewsets.ModelViewSet):
     queryset = Product.objects.all().order_by('-id')
 
 
+class ProductDetailView(APIView):
+    # permission_classes = [IsAuthenticated, ]
+
+    def get(self, request, pk):
+        product = Product.objects.get(id=pk)
+        serializer = manageProductDetailSerializer(product)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def delete(self, request, pk):
+        return Response(status=status.HTTP_200_OK)
+
+
+
 class UserViewSet(viewsets.ModelViewSet):
     serializer_class = manageUserListSerializer
     pagination_class = CustomPageSizePagination

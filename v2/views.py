@@ -3,7 +3,7 @@ import time
 from django.shortcuts import render, redirect
 from . import tasks
 from django.http import HttpResponse
-from .models import Product, Category, SubCategory, Feature
+from .models import Product, Category, SubCategory, Feature, Link
 from .serializers import *
 from rest_framework import viewsets
 from rest_framework import status
@@ -11,7 +11,7 @@ from django.db.models import Count, Sum, Case, When, IntegerField
 
 
 #Analytics
-from analytics.models import ProductView, CategoryView
+from analytics.models import ProductView, CategoryView, LinkClick
 
 #rest framework
 from rest_framework.decorators import api_view
@@ -120,6 +120,18 @@ def RecordProductView(request, id):
         user = request.user if request.user.is_authenticated else None
         ProductView.objects.create(product=product, user=user)
         CategoryView.objects.create(category=product.sub_category, user=user)
+        return Response({"status":200}, status=status.HTTP_200_OK)
+    else:
+        return Response({"status": 400}, status=status.HTTP_400_BAD_REQUEST)
+    
+
+@api_view(['POST'])
+def RecordLinkClick(request, id):
+    ifExists = Link.objects.filter(id=id).exists()
+    if ifExists:
+        link = Link.objects.filter(id=id)[0]
+        user = request.user if request.user.is_authenticated else None
+        LinkClick.objects.create(link=link, user=user)
         return Response({"status":200}, status=status.HTTP_200_OK)
     else:
         return Response({"status": 400}, status=status.HTTP_400_BAD_REQUEST)
