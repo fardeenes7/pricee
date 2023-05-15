@@ -18,12 +18,13 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'drf_yasg',
     'corsheaders',
+    'analytics',
+    'rest_framework',
+    'django_filters',
     'management',
     'user',
     'v1',
     'v2',
-    'analytics',
-    'rest_framework',
 ]
 
 REST_FRAMEWORK = {
