@@ -8,13 +8,11 @@ from .serializers import *
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import status, viewsets
 from rest_framework.pagination import PageNumberPagination
+from django.db.models import Count
+
 
 from v2.models import Product
 from user.models import User
-
-
-
-
 
 
 # Create your views here.
@@ -173,3 +171,28 @@ class UserDeleteView(APIView):
         user = User.objects.get(pk=pk)
         user.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+
+class ReportView(APIView):
+    def get(self, request):
+        shops = Shop.objects.all()
+        serializer = ShopSerializer(shops, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+
+from analytics.models import ProductView
+class ReportGenerateView(APIView):
+    def get(self, request):
+        data = {}
+        month = request.query_params.get('month')
+        year = request.query_params.get('year')
+        queryset = Product.objects.filter(viewcount__date__month=month,viewcount__date__year=year).annotate(view_count=Count('viewcount__id')).order_by('-view_count')[:10]
+        queryset = reportProductSerializer(queryset, many=True)
+        data['mostVisitedProducts'] = queryset.data
+
+        queryset = Link.objects.filter(linkclickcount__date__month=month,linkclickcount__date__year=year).annotate(click_count=Count('linkclickcount__id')).order_by('-click_count')[:10]
+        queryset = reportLinkSerializer(queryset, many=True)
+        data['mostClickedLinks'] = queryset.data
+
+        return Response(data, status=status.HTTP_200_OK)

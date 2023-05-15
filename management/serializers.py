@@ -104,3 +104,17 @@ class manageUserCreationSerializer(serializers.ModelSerializer):
         model = User
         fields = ["id", "username", "email", "name", "bio", "account_type", "auth_provider", "profile_pic", "is_superuser", "is_staff", "is_active", "date_joined", "groups", "user_permissions", "last_login"]
         depth = 1
+
+
+class reportProductSerializer(serializers.ModelSerializer):
+    view_count = serializers.IntegerField(read_only=True)
+
+    class Meta:
+        model = Product
+        fields = ['id', 'name', 'view_count']
+
+class reportLinkSerializer(serializers.ModelSerializer):
+    click_count = serializers.IntegerField(read_only=True)
+    class Meta:
+        model = Link
+        fields = ['id', 'href', 'click_count']

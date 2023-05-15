@@ -30,6 +30,10 @@ urlpatterns = [
 
    path('users', UserViewSet.as_view({'get':'list'}), name='users'),  
    path('users/new', UserCreateView.as_view(), name='user_new'),  
-   path('users/<int:pk>', UserDetailView.as_view(), name='user_detail')
+   path('users/<int:pk>', UserDetailView.as_view(), name='user_detail'),
+
+   path('report/', ReportView.as_view(), name='report_api'),
+   path('report/generate/', ReportGenerateView.as_view(), name='report_api'),
+   
 
 ]
