@@ -60,6 +60,7 @@ def viewAllRecordsPagination(request, page=1):
 # class ProductViewSet(viewsets.ModelViewSet):
 from rest_framework.filters import SearchFilter, OrderingFilter
 from django_filters.rest_framework import DjangoFilterBackend
+
 class ProductViewSet(ListAPIView):
     serializer_class = ProductListSerializer
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
@@ -70,25 +71,23 @@ class ProductViewSet(ListAPIView):
     def get_queryset(self):
         category = self.request.query_params.get('category', None)
         subcategory = self.request.query_params.get('sub_category', None)
-        search = self.request.query_params.get('query', None)
+        search = self.request.query_params.get('search', None)
 
-        if self.request.user.is_authenticated and category is None  and subcategory is None:
+        if self.request.user.is_authenticated and category is None  and subcategory is None and search is None:
             queryset = Product.objects.filter(viewcount__user=self.request.user).annotate(num_views=Count('viewcount')).order_by('-num_views').exclude(best_price=0)
             top_categories = SubCategory.objects.filter(
                 categoryviewcount__user=self.request.user).annotate(num_views=Count('categoryviewcount')
             ).order_by('-num_views')[:5]
             queryset = queryset.filter(sub_category__in=top_categories)
-        else:
+        elif search is None:
             queryset = Product.objects.annotate(num_views=Count('viewcount')).order_by('-num_views').exclude(best_price=0)
+        else:
+            queryset = Product.objects.annotate(num_views=Count('viewcount')).order_by('-num_views')
 
         if category is not None:
             queryset = queryset.filter(sub_category__category__slug=category)
         if subcategory is not None:
             queryset = queryset.filter(sub_category__slug=subcategory)
-        # if search is not None:
-        #     queryset = queryset = queryset.filter(name__icontains=search)
-        
-
         return queryset
 
 
