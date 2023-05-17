@@ -82,7 +82,7 @@ def send_registration_email(email, name, uid):
     send_mail(subject, message, email_from, recipient_list)
 
 
-def register_email_user(provider, email, name, password, image_url=None):
+def register_email_user(provider, email, name, password, image_url=None, username=""):
     filtered_user_by_email = User.objects.filter(email=email)
     if filtered_user_by_email.exists():
 
@@ -101,8 +101,9 @@ def register_email_user(provider, email, name, password, image_url=None):
                 detail='Please continue your login using ' + filtered_user_by_email[0].auth_provider)
 
     else:
+        uname = username if username else generate_username(name)
         user = {
-            'username': generate_username(name), 'email': email,
+            'username': uname, 'email': email,
             'password':password}
         user = User.objects.create_user(**user)
         user.is_verified = True
@@ -117,5 +118,6 @@ def register_email_user(provider, email, name, password, image_url=None):
         return {
             'email': new_user.email,
             'username': new_user.username,
+            'id': new_user.id,
             'tokens': new_user.tokens()
         }

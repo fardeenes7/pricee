@@ -116,11 +116,22 @@ class UserViewSet(viewsets.ModelViewSet):
 
 
 from user.auth.register import register_email_user
+from rest_framework.parsers import MultiPartParser, FormParser
 
 class UserCreateView(APIView):
     # permission_classes = [IsAuthenticated, ]
     def post(self, request):
-        data = register_email_user(request.data)
+        email = request.data['email']
+        if User.objects.filter(email=email).exists():
+            data = {'message': 'Email already exist'}
+            return Response(data, status=status.HTTP_400_BAD_REQUEST)
+        name = request.data['name']
+        password = request.data['password']
+        provider = "email"
+        username = request.data['username'] if 'username' in request.data else email.split('@')[0]
+        image_url = request.data['image_url'] if 'image_url' in request.data else None
+        print(request.data)
+        data = register_email_user(provider, email, name, password, image_url, username)
         return Response(data, status=status.HTTP_200_OK)
 
 
@@ -156,22 +167,9 @@ class UserDetailView(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def delete(self, request, pk):
-        return Response(status=status.HTTP_200_OK)
-
-
-class UserDeleteView(APIView):
-    # permission_classes = [IsAuthenticated, ]
-
-    # def get(self, request, pk):
-    #     user = User.objects.get(pk=pk)
-    #     user.delete()
-    #     return Response(status=status.HTTP_204_NO_CONTENT)
-    #     return Response(status=status.HTTP_400_BAD_REQUEST)
-    def get(self, request, pk):
         user = User.objects.get(pk=pk)
         user.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
-
+        return Response(status=status.HTTP_200_OK)
 
 
 class ReportView(APIView):
