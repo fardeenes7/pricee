@@ -74,11 +74,11 @@ class ProductViewSet(ListAPIView):
         search = self.request.query_params.get('search', None)
 
         if self.request.user.is_authenticated and category is None  and subcategory is None and search is None:
-            queryset = Product.objects.filter(viewcount__user=self.request.user).annotate(num_views=Count('viewcount')).order_by('-num_views').exclude(best_price=0)
+            queryset = Product.objects.all()
             top_categories = SubCategory.objects.filter(
                 categoryviewcount__user=self.request.user).annotate(num_views=Count('categoryviewcount')
             ).order_by('-num_views')[:5]
-            queryset = queryset.filter(sub_category__in=top_categories)
+            queryset = queryset.filter(sub_category__in=top_categories).annotate(num_views=Count('viewcount')).order_by('-num_views').exclude(best_price=0)
         elif search is None:
             queryset = Product.objects.annotate(num_views=Count('viewcount')).order_by('-num_views').exclude(best_price=0)
         else:
