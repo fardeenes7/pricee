@@ -112,6 +112,19 @@ class Feature(models.Model):
 
     def __str__(self):
         return self.name
+    
+
+
+class Review(models.Model):
+    product = models.ForeignKey(Product, related_name='reviews' ,on_delete=models.CASCADE)
+    name = models.CharField(max_length=255)
+    title = models.CharField(max_length=255)
+    rating = models.IntegerField(default=0)
+    date = models.DateTimeField(auto_now=True)
+    content = models.TextField(max_length=2047)
+
+    def __str__(self):
+        return self.name + ': ' + self.product.name
 
 """
 @receiver(post_delete, sender=Product)

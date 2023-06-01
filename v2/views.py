@@ -91,27 +91,6 @@ class ProductViewSet(ListAPIView):
         return queryset
 
 
-# class ProductListAPIView(ListAPIView):
-#     def get_queryset(self):
-#     serializer_class = ProductListSerializer
-#     category = self.request.query_params.get('category', None)
-#     subcategory = self.request.query_params.get('sub_category', None)
-#     search = self.request.query_params.get('query', None)
-#     if self.request.user.is_authenticated and category is None  and subcategory is None:
-#             queryset = Product.objects.filter(viewcount__user=self.request.user).annotate(num_views=Count('viewcount')).order_by('-num_views').exclude(best_price=0)
-#             top_categories = SubCategory.objects.filter(
-#                 categoryviewcount__user=self.request.user).annotate(num_views=Count('categoryviewcount')
-#             ).order_by('-num_views')[:5]
-#             queryset = queryset.filter(sub_category__in=top_categories)
-#     else:
-#         queryset = Product.objects.annotate(num_views=Count('viewcount')).order_by('-num_views').exclude(best_price=0)
-
-#     if category is not None:
-#         queryset = queryset.filter(sub_category__category__slug=category)
-#     if subcategory is not None:
-#         queryset = queryset.filter(sub_category__slug=subcategory)
-    
-
 @api_view(['GET'])
 def viewCategoryRecordsPagination(request, page=1, category="all"):
     subcategories = SubCategory.objects.filter(category__slug=category) if category != "all" else SubCategory.objects.all()

@@ -99,19 +99,26 @@ class SuggestionsSerializer(serializers.ModelSerializer):
             return None
 
 
+class ReviewSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Review
+        fields = "__all__"
+
+
 class ProductSerializer(serializers.ModelSerializer):
     features = FeatureSerializer(many=True, read_only=True)
     sub_category = SubcategorySerializer()
     images = ImageSerializer(many=True, read_only=True)
     suggestions = serializers.SerializerMethodField()
     links = LinkSerializer(many=True, read_only=True)
+    reviews = ReviewSerializer(many=True, read_only=True)
     class Meta:
         model = Product
-        fields = ['id', 'name', 'sub_category', 'best_price', 'brand', 'model', 'images', 'links', 'features', 'suggestions']
+        fields = ['id', 'name', 'sub_category', 'best_price', 'brand', 'model', 'images', 'links', 'features', 'suggestions', 'reviews']
         depth = 2
     
     def get_suggestions(self, product):
-        suggestions = Product.objects.filter(sub_category=product.sub_category).exclude(id=product.id).order_by('?')[:6]
+        suggestions = Product.objects.filter(sub_category=product.sub_category).exclude(id=product.id).order_by('?')[:8]
         return SuggestionsSerializer(suggestions, many=True).data
 
 
@@ -125,3 +132,5 @@ class LandingCategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
         fields = ['name', 'slug']
+
+
