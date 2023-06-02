@@ -1,8 +1,5 @@
-import json
-import time
 from django.shortcuts import render, redirect
 from . import tasks
-from django.http import HttpResponse
 from .models import Product, Category, SubCategory, Feature, Link
 from .serializers import *
 from rest_framework import viewsets, status
