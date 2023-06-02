@@ -140,7 +140,7 @@ CELERY_RESULT_SERIALIZER = 'json'
 """
 
 
-CORS_ALLOWED_ORIGINS = ["http://localhost:3000"]
+CORS_ALLOWED_ORIGINS = ["http://localhost:3000", 'http://127.0.0.1:8000', 'https://pricee-production.up.railway.app', 'https://www.pricee-production.up.railway.app']
 CORS_ALLOW_ALL_ORIGINS = True
 
 CSRF_TRUSTED_ORIGINS = ["https://pricee-production.up.railway.app", 'https://www.pricee-production.up.railway.app', 'http://127.0.0.1:8000']

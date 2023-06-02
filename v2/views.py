@@ -162,34 +162,3 @@ def SubCategoryList(request):
     subcategories = SubCategory.objects.all()
     serializer = SubcategorySerializer(subcategories, many=True)
     return Response(serializer.data)
-
-
-@api_view(['GET'])
-def Navigation(request):
-    exclude = ["Others", "Speaker", "Phone", "Home Appliance", "Home Appliances", "Digital Signage"]
-    categories = Category.objects.all().exclude(name__in=exclude).order_by('name')
-    serializer = CategorySerializer(categories, many=True)
-    shops = Shop.objects.all()
-    shopSerializer = ShopSerializer(shops, many=True)
-    nav = {"categories": serializer.data, "shops": shopSerializer.data}
-    return Response(nav)
-
-
-
-from management.models import BannerAd
-from management.serializers import BannerAdSerializer
-
-@api_view(['GET'])
-def Landing(request):
-    bannerAds = []
-    bannerAds.append(BannerAd.objects.filter(active=True, size='3x1').order_by('-id')[0])
-    bannerAds.append(BannerAd.objects.filter(active=True, size='1x1').order_by('-id')[0])
-    bannerAdSerializer = BannerAdSerializer(bannerAds, many=True)
-
-    categories = Category.objects.all()[:8]
-    categorySerializer = LandingCategorySerializer(categories, many=True)
-
-    products = Product.objects.annotate(num_views=Count('viewcount')).order_by('-num_views').exclude(best_price=0)[:20]
-    productSerializer = ProductListSerializer(products, many=True)
-
-    return Response({"bannerAds": bannerAdSerializer.data, "categories": categorySerializer.data, "products": productSerializer.data})
