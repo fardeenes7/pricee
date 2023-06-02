@@ -28,7 +28,7 @@ class BannerAd(models.Model):
     
     def save(self, *args, **kwargs):
         if self.size == '1x1' and self.active == True:
-            banners = BannerAd.objects.filter(size='1x1', active=True).exclude(id=self.id).order_by('-id')[3:]
+            banners = BannerAd.objects.filter(size='1x1', active=True).exclude(id=self.id).order_by('-id')[1:]
             for banner in banners:
                 banner.active = False
                 banner.save()

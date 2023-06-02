@@ -8,70 +8,33 @@ from .serializers import *
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import status, viewsets
 from rest_framework.pagination import PageNumberPagination
+from django.db.models import Count
+
 
 from v2.models import Product
 from user.models import User
 
 
-
-
-
-
 # Create your views here.
 
-def BannerAds(request):
-    now = timezone.now()
-
-    # First, get any scheduled ads that should be displayed.
-    scheduled_ads = BannerAd.objects.filter(active=True, scheduledFrom__lte=now, scheduledTo__gte=now).order_by('-scheduledFrom')
-    if scheduled_ads:
-        banner = scheduled_ads.first()
-
-    # If there are no scheduled ads, get the latest active ad.
-    latest_active_ads = BannerAd.objects.filter(active=True).order_by('-id')
-    if latest_active_ads:
-        # Check which ad sizes we still need to display.
-        sizes_needed = {'3x2': 1, '1x1': 2, '1x2': 1}
-        for ad in latest_active_ads:
-            if sizes_needed.get(ad.size):
-                sizes_needed[ad.size] -= 1
-                if all(count == 0 for count in sizes_needed.values()):
-                    # We have all the ad sizes we need.
-                    banner = ad
-    data = banner
-    #serialize data
-
-class BannerAdAPIView(generics.GenericAPIView):
+class BannerAdAPIView(generics.ListAPIView):
     serializer_class = BannerAdSerializer
+    pagination_class = None
+    queryset = BannerAd.objects.filter(active=True).filter(scheduledFrom__lte=timezone.now()).filter(scheduledTo__gte=timezone.now()).order_by('-id')
+    def get_queryset(self):
+        banner1 = BannerAd.objects.filter(size='1x1', active=True).filter(scheduledFrom__lte=timezone.now()).filter(scheduledTo__gte=timezone.now()).order_by('-id')[:1]
+        banner2 = BannerAd.objects.filter(size='3x1', active=True).filter(scheduledFrom__lte=timezone.now()).filter(scheduledTo__gte=timezone.now()).order_by('-id')[:1]
+        if not banner1:
+            banner1 = BannerAd.objects.filter(size='1x1', active=True).order_by('-id')[:1]
+        if not banner2:
+            banner2 = BannerAd.objects.filter(size='3x1', active=True).order_by('-id')[:1]
+        if not banner1:
+            banner1 = BannerAd.objects.filter(size='1x1').order_by('-id')[:1]
+        if not banner2:
+            banner2 = BannerAd.objects.filter(size='3x1').order_by('-id')[:1]
+        banner = banner1 | banner2
+        return banner
 
-    def get(self, request, *args, **kwargs):
-        now = timezone.now()
-
-        # First, get any scheduled ads that should be displayed.
-        scheduled_ads = BannerAd.objects.filter(active=True, scheduledFrom__lte=now, scheduledTo__gte=now).order_by('-scheduledFrom')
-        if scheduled_ads:
-            banner = scheduled_ads.first()
-            serializer = self.get_serializer(banner)
-            return Response(serializer.data)
-
-        # If there are no scheduled ads, get the latest active ad.
-        latest_active_ads = BannerAd.objects.filter(active=True).order_by('-id')
-        data = []
-        if latest_active_ads:
-            # Check which ad sizes we still need to display.
-            sizes_needed = {'2x1': 1, '1x1': 2, '1x2': 1}
-            for ad in latest_active_ads:
-                if sizes_needed.get(ad.size):
-                    sizes_needed[ad.size] -= 1
-                    data.append(ad)
-                    if all(count == 0 for count in sizes_needed.values()):
-                        # We have all the ad sizes we need.
-                        serializer = self.get_serializer(ad)
-                        return Response(serializer.data)
-
-        # If we get here, we couldn't find any ads to display.
-        serializer = self.get_serializer(data, many=True)
-        return Response(serializer.data)
 
 
 
@@ -97,6 +60,19 @@ class ProductViewSet(viewsets.ModelViewSet):
     queryset = Product.objects.all().order_by('-id')
 
 
+class ProductDetailView(APIView):
+    # permission_classes = [IsAuthenticated, ]
+
+    def get(self, request, pk):
+        product = Product.objects.get(id=pk)
+        serializer = manageProductDetailSerializer(product)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def delete(self, request, pk):
+        return Response(status=status.HTTP_200_OK)
+
+
+
 class UserViewSet(viewsets.ModelViewSet):
     serializer_class = manageUserListSerializer
     pagination_class = CustomPageSizePagination
@@ -105,11 +81,22 @@ class UserViewSet(viewsets.ModelViewSet):
 
 
 from user.auth.register import register_email_user
+from rest_framework.parsers import MultiPartParser, FormParser
 
 class UserCreateView(APIView):
     # permission_classes = [IsAuthenticated, ]
     def post(self, request):
-        data = register_email_user(request.data)
+        email = request.data['email']
+        if User.objects.filter(email=email).exists():
+            data = {'message': 'Email already exist'}
+            return Response(data, status=status.HTTP_400_BAD_REQUEST)
+        name = request.data['name']
+        password = request.data['password']
+        provider = "email"
+        username = request.data['username'] if 'username' in request.data else email.split('@')[0]
+        image_url = request.data['image_url'] if 'image_url' in request.data else None
+        print(request.data)
+        data = register_email_user(provider, email, name, password, image_url, username)
         return Response(data, status=status.HTTP_200_OK)
 
 
@@ -145,18 +132,30 @@ class UserDetailView(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def delete(self, request, pk):
+        user = User.objects.get(pk=pk)
+        user.delete()
         return Response(status=status.HTTP_200_OK)
 
 
-class UserDeleteView(APIView):
-    # permission_classes = [IsAuthenticated, ]
+class ReportView(APIView):
+    def get(self, request):
+        shops = Shop.objects.all()
+        serializer = ShopSerializer(shops, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
 
-    # def get(self, request, pk):
-    #     user = User.objects.get(pk=pk)
-    #     user.delete()
-    #     return Response(status=status.HTTP_204_NO_CONTENT)
-    #     return Response(status=status.HTTP_400_BAD_REQUEST)
-    def get(self, request, pk):
-        user = User.objects.get(pk=pk)
-        user.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+from analytics.models import ProductView
+class ReportGenerateView(APIView):
+    def get(self, request):
+        data = {}
+        month = request.query_params.get('month')
+        year = request.query_params.get('year')
+        queryset = Product.objects.filter(viewcount__date__month=month,viewcount__date__year=year).annotate(view_count=Count('viewcount__id')).order_by('-view_count')[:10]
+        queryset = reportProductSerializer(queryset, many=True)
+        data['mostVisitedProducts'] = queryset.data
+
+        queryset = Link.objects.filter(linkclickcount__date__month=month,linkclickcount__date__year=year).annotate(click_count=Count('linkclickcount__id')).order_by('-click_count')[:10]
+        queryset = reportLinkSerializer(queryset, many=True)
+        data['mostClickedLinks'] = queryset.data
+
+        return Response(data, status=status.HTTP_200_OK)

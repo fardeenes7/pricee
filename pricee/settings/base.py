@@ -18,12 +18,13 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'drf_yasg',
     'corsheaders',
+    'analytics',
+    'rest_framework',
+    'django_filters',
     'management',
     'user',
     'v1',
     'v2',
-    'analytics',
-    'rest_framework',
 ]
 
 REST_FRAMEWORK = {
@@ -37,9 +38,9 @@ REST_FRAMEWORK = {
 
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=60),
-    "REFRESH_TOKEN_LIFETIME": timedelta(days=30),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=90),
     "ROTATE_REFRESH_TOKENS": True,
-    "BLACKLIST_AFTER_ROTATION": False,
+    "BLACKLIST_AFTER_ROTATION": True,
     "UPDATE_LAST_LOGIN": True,
 
     "ALGORITHM": "HS256",
@@ -139,7 +140,7 @@ CELERY_RESULT_SERIALIZER = 'json'
 """
 
 
-CORS_ALLOWED_ORIGINS = ["http://localhost:3000"]
+CORS_ALLOWED_ORIGINS = ["http://localhost:3000", 'http://127.0.0.1:8000', 'https://pricee-production.up.railway.app', 'https://www.pricee-production.up.railway.app']
 CORS_ALLOW_ALL_ORIGINS = True
 
 CSRF_TRUSTED_ORIGINS = ["https://pricee-production.up.railway.app", 'https://www.pricee-production.up.railway.app', 'http://127.0.0.1:8000']

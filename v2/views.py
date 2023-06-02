@@ -3,15 +3,15 @@ import time
 from django.shortcuts import render, redirect
 from . import tasks
 from django.http import HttpResponse
-from .models import Product, Category, SubCategory, Feature
+from .models import Product, Category, SubCategory, Feature, Link
 from .serializers import *
-from rest_framework import viewsets
-from rest_framework import status
+from rest_framework import viewsets, status
 from django.db.models import Count, Sum, Case, When, IntegerField
+from rest_framework.generics import ListAPIView
 
 
 #Analytics
-from analytics.models import ProductView, CategoryView
+from analytics.models import ProductView, CategoryView, LinkClick
 
 #rest framework
 from rest_framework.decorators import api_view
@@ -57,21 +57,32 @@ def viewAllRecordsPagination(request, page=1):
     return Response(serializer.data)
 
 
-class ProductViewSet(viewsets.ModelViewSet):
+# class ProductViewSet(viewsets.ModelViewSet):
+from rest_framework.filters import SearchFilter, OrderingFilter
+from django_filters.rest_framework import DjangoFilterBackend
+
+class ProductViewSet(ListAPIView):
     serializer_class = ProductListSerializer
+    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
+    filterset_fields = ['name','best_price']
+    search_fields = ['name', 'sub_category__category__name', 'sub_category__name']
+    order_fields = ['name', 'best_price']
 
     def get_queryset(self):
         category = self.request.query_params.get('category', None)
         subcategory = self.request.query_params.get('sub_category', None)
+        search = self.request.query_params.get('search', None)
 
-        if self.request.user.is_authenticated and category is None  and subcategory is None:
-            queryset = Product.objects.filter(viewcount__user=self.request.user).annotate(num_views=Count('viewcount')).order_by('-num_views').exclude(best_price=0)
+        if self.request.user.is_authenticated and category is None  and subcategory is None and search is None:
+            queryset = Product.objects.all()
             top_categories = SubCategory.objects.filter(
                 categoryviewcount__user=self.request.user).annotate(num_views=Count('categoryviewcount')
             ).order_by('-num_views')[:5]
-            queryset = queryset.filter(sub_category__in=top_categories)
-        else:
+            queryset = queryset.filter(sub_category__in=top_categories).annotate(num_views=Count('viewcount')).order_by('-num_views').exclude(best_price=0)
+        elif search is None:
             queryset = Product.objects.annotate(num_views=Count('viewcount')).order_by('-num_views').exclude(best_price=0)
+        else:
+            queryset = Product.objects.annotate(num_views=Count('viewcount')).order_by('-num_views')
 
         if category is not None:
             queryset = queryset.filter(sub_category__category__slug=category)
@@ -123,6 +134,18 @@ def RecordProductView(request, id):
         return Response({"status":200}, status=status.HTTP_200_OK)
     else:
         return Response({"status": 400}, status=status.HTTP_400_BAD_REQUEST)
+    
+
+@api_view(['POST'])
+def RecordLinkClick(request, id):
+    ifExists = Link.objects.filter(id=id).exists()
+    if ifExists:
+        link = Link.objects.filter(id=id)[0]
+        user = request.user if request.user.is_authenticated else None
+        LinkClick.objects.create(link=link, user=user)
+        return Response({"status":200}, status=status.HTTP_200_OK)
+    else:
+        return Response({"status": 400}, status=status.HTTP_400_BAD_REQUEST)
 
 
 
@@ -139,34 +162,3 @@ def SubCategoryList(request):
     subcategories = SubCategory.objects.all()
     serializer = SubcategorySerializer(subcategories, many=True)
     return Response(serializer.data)
-
-
-@api_view(['GET'])
-def Navigation(request):
-    exclude = ["Others", "Speaker", "Phone", "Home Appliance", "Home Appliances", "Digital Signage"]
-    categories = Category.objects.all().exclude(name__in=exclude).order_by('name')
-    serializer = CategorySerializer(categories, many=True)
-    shops = Shop.objects.all()
-    shopSerializer = ShopSerializer(shops, many=True)
-    nav = {"categories": serializer.data, "shops": shopSerializer.data}
-    return Response(nav)
-
-
-
-from management.models import BannerAd
-from management.serializers import BannerAdSerializer
-
-@api_view(['GET'])
-def Landing(request):
-    bannerAds = []
-    bannerAds.append(BannerAd.objects.filter(active=True, size='3x1').order_by('-id')[0])
-    bannerAds.append(BannerAd.objects.filter(active=True, size='1x1').order_by('-id')[0])
-    bannerAdSerializer = BannerAdSerializer(bannerAds, many=True)
-
-    categories = Category.objects.all()[:8]
-    categorySerializer = LandingCategorySerializer(categories, many=True)
-
-    products = Product.objects.annotate(num_views=Count('viewcount')).order_by('-num_views').exclude(best_price=0)[:20]
-    productSerializer = ProductListSerializer(products, many=True)
-
-    return Response({"bannerAds": bannerAdSerializer.data, "categories": categorySerializer.data, "products": productSerializer.data})

@@ -4,13 +4,14 @@ import requests
 from django.template.defaultfilters import slugify
 from ..models import Product, Category, SubCategory, Feature, Link, Image, Shop
 from .functions import get_urls_of_xml, removeBrand, set_category, save_images, save_product
+from alive_progress import alive_bar
 
 import os
 from dotenv import load_dotenv
 load_dotenv()
 DEBUG = os.environ.get('DEBUG')
 
-shop = Shop.objects.get_or_create(name="Techland", href="https://www.techlandbd.com/")[0]
+shop = Shop.objects.get_or_create(name="Techland", href="https://www.techlandbd.com/", logo="https://www.techlandbd.com/image/cache/wp/gp/techland/logo/techland-white-logo-300x48.webp")[0]
 
 # session = requests.Session()
 def get_product_data(url):
@@ -64,21 +65,25 @@ def get_product_data(url):
                 feature.value = value
                 feature.save()
                     
-        print('Loaded : ' + name)
+        # print('Loaded : ' + name)
 
     except Exception as e:
-        print("Error loading " + url)
-        print(e)
-
+        # print("Error loading " + url)
+        # print(e)
+        pass
 
 
 
 def load_from_techland():
     print("Loading from Techland")
     links_data_arr = get_urls_of_xml("https://www.techlandbd.com/sitemaps/product-sitemap.xml", "html.parser")
-    if DEBUG == 'True':
-        links_data_arr = links_data_arr[:100]
-    with concurrent.futures.ThreadPoolExecutor(max_workers=8) as executor:
-        executor.map(get_product_data, links_data_arr)
+    # if DEBUG == 'True':
+    #     links_data_arr = links_data_arr[:100]
+    with alive_bar(len(links_data_arr)) as bar:
+        for link in links_data_arr:
+            get_product_data(link)
+            bar()
+    # with concurrent.futures.ThreadPoolExecutor(max_workers=8) as executor:
+    #     executor.map(get_product_data, links_data_arr)
     print("Loading from Techland Complete")
 

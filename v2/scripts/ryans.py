@@ -10,7 +10,8 @@ from dotenv import load_dotenv
 load_dotenv()
 DEBUG = os.environ.get('DEBUG')
 
-shop = Shop.objects.get_or_create(name="Ryans", href="https://www.ryanscomputers.com/")[0]
+shop = Shop.objects.get_or_create(name="Ryans", href="https://www.ryanscomputers.com/", logo="https://www.ryanscomputers.com/assets/images/ryans-logo.svg")[0]
+
 
 def get_product_data(url):
     try:
@@ -68,8 +69,8 @@ def load_from_ryans():
     print("Loading from Ryans")
     
     links_data_arr = get_urls_of_xml("https://www.ryanscomputers.com/product-sitemap.xml", "xml")
-    if DEBUG == 'True':
-        links_data_arr = links_data_arr[:100]
+    # if DEBUG == 'True':
+    #     links_data_arr = links_data_arr[:100]
     # links_data_arr = test_data
     with concurrent.futures.ThreadPoolExecutor(max_workers=8) as executor:
         executor.map(get_product_data, links_data_arr)

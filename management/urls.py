@@ -23,10 +23,16 @@ schema_view = get_schema_view(
 
 
 urlpatterns = [
-   path('bannerads/', BannerAdAPIView.as_view(), name='bannerads'),
    path('permission/',checkAdminPermissionView.as_view(), name='check_permission'),
    path('products', ProductViewSet.as_view({'get':'list'}), name='products'),
+   path('products/<int:pk>', ProductDetailView.as_view(), name='product_detail'),
+
    path('users', UserViewSet.as_view({'get':'list'}), name='users'),  
    path('users/new', UserCreateView.as_view(), name='user_new'),  
-   path('users/<int:pk>', UserDetailView.as_view(), name='user_detail')
+   path('users/<int:pk>', UserDetailView.as_view(), name='user_detail'),
+
+   path('report/', ReportView.as_view(), name='report_api'),
+   path('report/generate/', ReportGenerateView.as_view(), name='report_api'),
+   
+
 ]
