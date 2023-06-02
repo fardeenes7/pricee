@@ -140,10 +140,10 @@ CELERY_RESULT_SERIALIZER = 'json'
 """
 
 
-CORS_ALLOWED_ORIGINS = ["http://localhost:3000", 'http://127.0.0.1:8000', 'https://pricee-production.up.railway.app', 'https://www.pricee-production.up.railway.app']
+CORS_ALLOWED_ORIGINS = ["http://localhost:3000", 'http://127.0.0.1:8000', 'https://pricee.up.railway.app', 'https://www.pricee.up.railway.app', "https://pricee-inky.vercel.app"]
 CORS_ALLOW_ALL_ORIGINS = True
 
-CSRF_TRUSTED_ORIGINS = ["https://pricee-production.up.railway.app", 'https://www.pricee-production.up.railway.app', 'http://127.0.0.1:8000']
+CSRF_TRUSTED_ORIGINS = ['https://www.pricee.up.railway.app', 'http://127.0.0.1:8000', "https://pricee-inky.vercel.app"]
 
 LANGUAGE_CODE = 'en-us'
 
