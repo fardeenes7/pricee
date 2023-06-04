@@ -9,7 +9,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework import status, viewsets
 from rest_framework.pagination import PageNumberPagination
 from django.db.models import Count
-
+import datetime
 
 from v2.models import Product
 from user.models import User
@@ -144,18 +144,51 @@ class ReportView(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
     
 
-from analytics.models import ProductView
+from analytics.models import ProductView, LinkClick
 class ReportGenerateView(APIView):
     def get(self, request):
         data = {}
+        print(request.query_params)
         month = request.query_params.get('month')
         year = request.query_params.get('year')
+        shop = Shop.objects.get(pk=request.query_params.get('shopId'))
         queryset = Product.objects.filter(viewcount__date__month=month,viewcount__date__year=year).annotate(view_count=Count('viewcount__id')).order_by('-view_count')[:10]
         queryset = reportProductSerializer(queryset, many=True)
         data['mostVisitedProducts'] = queryset.data
 
-        queryset = Link.objects.filter(linkclickcount__date__month=month,linkclickcount__date__year=year).annotate(click_count=Count('linkclickcount__id')).order_by('-click_count')[:10]
+        queryset = Link.objects.filter(linkclickcount__date__month=month,linkclickcount__date__year=year, shop=shop).annotate(click_count=Count('linkclickcount__id')).order_by('-click_count')[:10]
         queryset = reportLinkSerializer(queryset, many=True)
         data['mostClickedLinks'] = queryset.data
+
+        print(data)
+
+        return Response(data, status=status.HTTP_200_OK)
+
+class DashboardView(APIView):
+    def get(self, request):
+        data = {'stats':{}, 'charts':[]}
+        data['stats']['totalProducts'] = Product.objects.all().count()
+        data['stats']['totalUsers'] = User.objects.all().count()
+        data['stats']['totalProductViews'] = ProductView.objects.all().count()
+
+        productViews = []
+        for i in range(7):
+            date = datetime.date.today()-datetime.timedelta(days=i)
+            count = ProductView.objects.filter(date=date).count()
+            productViews.append({'date': date.strftime("%d %b"), 'count': count})
+
+        data['charts'].append({'title': 'Product Views','labels': [x['date'] for x in productViews], 'datasets':[{'title':"Product Views",'data': [x['count'] for x in productViews], 'backgroundColor': '#E86840'}]})
+
+        #linkclickcount of last 7 days
+        data['charts'].append({'title': 'External Link Clicks','labels': [x['date'] for x in productViews], 'datasets':[]})
+        shops = Shop.objects.all()
+        for shop in shops:
+            linkClicks = []
+            for i in range(7):
+                date = datetime.date.today()-datetime.timedelta(days=i)
+                count = LinkClick.objects.filter(date=date, link__shop=shop).count()
+                linkClicks.append({'date': date.strftime("%d %b"), 'count': count})
+            backgroundColor = '#72BF44' if shop.name == 'Ryans' else '#141D39' if shop.name == 'Techland' else '#EF4A23'
+            data['charts'][1]['datasets'].append({'title':shop.name, 'data': [x['count'] for x in linkClicks], 'backgroundColor':backgroundColor})
 
         return Response(data, status=status.HTTP_200_OK)

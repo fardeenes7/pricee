@@ -23,6 +23,7 @@ schema_view = get_schema_view(
 
 
 urlpatterns = [
+   path('dashboard/', DashboardView.as_view(), name='dashboard'),
    path('permission/',checkAdminPermissionView.as_view(), name='check_permission'),
    path('products', ProductViewSet.as_view({'get':'list'}), name='products'),
    path('products/<int:pk>', ProductDetailView.as_view(), name='product_detail'),
