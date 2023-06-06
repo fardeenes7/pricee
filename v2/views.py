@@ -75,6 +75,8 @@ class ProductViewSet(ListAPIView):
             top_categories = SubCategory.objects.filter(
                 categoryviewcount__user=self.request.user).annotate(num_views=Count('categoryviewcount')
             ).order_by('-num_views')[:5]
+            if len(top_categories) < 5:
+                top_categories = top_categories | SubCategory.objects.annotate(num_views=Count('categoryviewcount')).order_by('-num_views')[:5-len(top_categories)]
             queryset = queryset.filter(sub_category__in=top_categories).annotate(num_views=Count('viewcount')).order_by('-num_views').exclude(best_price=0)
         elif search is None:
             queryset = Product.objects.annotate(num_views=Count('viewcount')).order_by('-num_views').exclude(best_price=0)
