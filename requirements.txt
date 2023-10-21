@@ -34,4 +34,5 @@ python-dotenv
 redis
 requests
 rest-framework-simplejwt
+whitenoise
 selenium
