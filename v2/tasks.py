@@ -1,7 +1,7 @@
 from django.http import HttpResponse
 from django.contrib import admin
 from datetime import datetime
-from celery import task, shared_task
+from celery import shared_task
 from .scripts.startech import load_from_startech, get_product_data as get_startech_product_data
 from .scripts.techland import load_from_techland, get_product_data as get_techland_product_data
 from .scripts.ryans import load_from_ryans, get_product_data as get_ryans_product_data
