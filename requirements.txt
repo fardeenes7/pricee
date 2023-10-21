@@ -36,3 +36,4 @@ requests
 rest-framework-simplejwt
 whitenoise
 selenium
+dj-database-url
