@@ -1,6 +1,7 @@
 fixture
 fixture/*
 
+staticfiles
 
 # Django #
 *.log
