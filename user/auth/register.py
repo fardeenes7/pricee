@@ -1,5 +1,5 @@
 from ..models import User
-import requests
+# import requests
 from django.core.files import File
 
 from django.contrib.auth import authenticate
@@ -19,13 +19,12 @@ def generate_username(name):
 
 
 def generate_profile_pic_url(id, url):
-    url = url if url else f"https://api.dicebear.com/6.x/bottts/{id}.png"
-    response = requests.get(url)
-    # image_name = url.split("/")[-1] # Get the image name from the URL
-    image_name = f"{id}.png"
-    with open(image_name, "wb") as f:
-        f.write(response.content)
-    # Now save the image to your model
+    # url = url if url else f"https://api.dicebear.com/6.x/bottts/{id}.png"
+    # response = requests.get(url)
+    # image_name = f"{id}.png"
+    # with open(image_name, "wb") as f:
+    #     f.write(response.content)
+    image_name = 'default.png'
     return image_name
     
 
