@@ -11,10 +11,10 @@ load_dotenv()
 DEBUG = os.environ.get('DEBUG')
 
 
-shop = Shop.objects.get_or_create(name="Startech", href="https://www.startech.com.bd/", logo="https://www.startech.com.bd/image/catalog/logo.png")[0]
 
 
 def get_product_data(url):
+    shop = Shop.objects.get_or_create(name="Startech", href="https://www.startech.com.bd/", logo="https://www.startech.com.bd/image/catalog/logo.png")[0]
     try:
         r = requests.get(url)
         soup = BeautifulSoup(r.text, features='html.parser')
@@ -73,6 +73,7 @@ test_data = [
 
 def load_from_startech():
     print("Loading from startech")
+    shop = Shop.objects.get_or_create(name="Startech", href="https://www.startech.com.bd/", logo="https://www.startech.com.bd/image/catalog/logo.png")[0]
     links_data_arr = get_urls_of_xml("https://www.startech.com.bd/sitemap.xml", "xml")
     # links_data_arr = test_data
     print("Total links found: " + str(len(links_data_arr)))
@@ -80,7 +81,7 @@ def load_from_startech():
     #     links_data_arr = links_data_arr[1412:1512]
     # else:
     #     links_data_arr = links_data_arr[1412:]
-    links_data_arr = links_data_arr[1412:]
+    links_data_arr = links_data_arr[1512:1612]
     with concurrent.futures.ThreadPoolExecutor(max_workers=8) as executor:
         executor.map(get_product_data, links_data_arr)
 

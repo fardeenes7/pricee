@@ -208,9 +208,9 @@ def loadAll():
     from .scripts.techland import load_from_techland
     from .scripts.ryans import load_from_ryans
     start = datetime.now()
-    load_from_techland()
     load_from_startech()
     load_from_ryans()
+    load_from_techland()
     cleancategories()
     end = datetime.now()
     time_taken = (end - start).total_seconds()

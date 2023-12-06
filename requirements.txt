@@ -29,7 +29,7 @@ google-auth
 graphviz
 gunicorn
 Pillow
-psycopg2
+psycopg2-binary
 python-dotenv
 redis
 requests
