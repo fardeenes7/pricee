@@ -1,48 +1,57 @@
-# Pricee
+
+# Description
 
 Pricee is a web scraping project that allows users to compare prices of products across multiple websites. It is built with Django Rest Framework and uses web scraping techniques to collect data from various e-commerce websites.
 
-## Installation
+# Tech Stack
+
+![Tech Stack](/images/projects/pricee/stack.png)
+
+# Installation
 
 1.  Clone the repository to your local machine:
 
-    bashCopy code
-
-    `git clone https://github.com/yourusername/pricee.git`
+    ```bash
+    git clone https://github.com/fardeenes7/pricee.git
+    ```
 
 2.  Create a virtual environment and activate it:
 
-    bashCopy code
-
-    `python -m venv env
-source env/bin/activate (Linux/Mac)
-env\Scripts\activate (Windows)`
+    
+    ```bash
+    python -m venv env
+    source env/bin/activate (Linux/Mac)
+    env\Scripts\activate (Windows)
+    ```
 
 3.  Install the required packages:
 
-    Copy code
 
-    `pip install -r requirements.txt`
+    ```bash
+    pip install -r requirements.txt
+    ```
 
 4.  Run the migrations:
 
-    Copy code
-
-    `python manage.py migrate`
+    ```bash
+    python manage.py migrate
+    ```
 
 5.  Start the development server:
 
-    Copy code
-
-    `python manage.py runserver`
+    ```bash
+    python manage.py runserver
+    ```
 
 6.  Use a REST client like [Postman](https://www.postman.com/downloads/) to interact with the Pricee API.
 
-## API Endpoints
+# Endpoints
 
 The following API endpoints are available in Pricee:
 
-### `/api/v2/refreshAllRecords/`
+## Client API
+
+## `/api/v2/refreshAllRecords/`
 
 -   `GET`: Refresh all records in the database.
 
@@ -98,7 +107,7 @@ The following API endpoints are available in Pricee:
 
 -   Includes endpoints from the `user.urls` module.
 
-## management API Endpoints
+## Management API
 
 ### `/api/manage/bannerads/`
 
@@ -142,4 +151,4 @@ If you would like to contribute to Pricee, please open a pull request or submit 
 
 ## License
 
-Pricee is licensed under the MIT License. See the LICENSE file for more information.
+[GNU GPLv3](https://www.gnu.org/licenses/gpl-3.0.en.html)
