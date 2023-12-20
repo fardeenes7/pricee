@@ -5,7 +5,7 @@ Pricee is a web scraping project that allows users to compare prices of products
 
 # Tech Stack
 
-![Tech Stack](/images/projects/pricee/stack.png)
+![Tech Stack](https://fardiin.com/images/projects/pricee/stack.png)
 
 # Installation
 
