@@ -88,7 +88,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'pricee.urls'
+ROOTURL_CONF = 'pricee.urls'
 
 TEMPLATES = [
     {

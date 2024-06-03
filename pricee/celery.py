@@ -8,12 +8,11 @@ load_dotenv()
 
 
 DEBUG = os.environ.get('DEBUG')
-# if DEBUG == 'True':
-#     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'pricee.settings.local')
-# else:
-#     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'pricee.settings.production')
+if DEBUG == 'True':
+    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'pricee.settings.local')
+else:
+    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'pricee.settings.production')
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'pricee.settings.production')
 
 app = Celery('pricee')
 app.config_from_object('django.conf:settings', namespace='CELERY')
