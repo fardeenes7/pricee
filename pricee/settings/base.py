@@ -9,7 +9,6 @@ SECRET_KEY = os.environ.get('SECRET_KEY')
 
 
 INSTALLED_APPS = [
-    'django_admin_tailwind',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -144,7 +143,7 @@ CELERY_RESULT_SERIALIZER = 'json'
 CORS_ALLOWED_ORIGINS = ["http://localhost:3000", 'http://127.0.0.1:8000', 'https://pricee.up.railway.app', 'https://www.pricee.up.railway.app', "https://pricee-inky.vercel.app"]
 CORS_ALLOW_ALL_ORIGINS = True
 
-CSRF_TRUSTED_ORIGINS = ['https://www.pricee.up.railway.app', 'http://127.0.0.1:8000', "https://pricee-inky.vercel.app"]
+CSRF_TRUSTED_ORIGINS = ['https://www.pricee.up.railway.app', 'http://127.0.0.1:8000', "https://pricee-inky.vercel.app", 'https://pricee.fardiin.com']
 
 LANGUAGE_CODE = 'en-us'
 

@@ -1,3 +1,4 @@
+alive-progress
 amqp
 asgiref
 Babel
@@ -20,10 +21,19 @@ django-templated-mail
 djangorestframework
 djangorestframework-simplejwt
 drf-yasg
+firebase-admin
+google
+google-api-core
+google-api-python-client
+google-auth
+graphviz
+gunicorn
 Pillow
 psycopg2-binary
 python-dotenv
+redis
 requests
 rest-framework-simplejwt
 whitenoise
+selenium
 dj-database-url
