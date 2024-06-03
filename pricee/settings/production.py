@@ -10,6 +10,7 @@ ROOT_URLCONF = 'pricee.urls'
 
 ALLOWED_HOSTS = ['*']
 
+
 DATABASES = {
     'default': dj_database_url.config(
         # Feel free to alter this value to suit your needs.
