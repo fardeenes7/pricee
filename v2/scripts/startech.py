@@ -2,7 +2,7 @@ import concurrent.futures
 from bs4 import BeautifulSoup
 import requests
 from ..models import Feature, Shop
-from .functions import get_urls_of_xml, removeBrand, set_category, save_images, save_product
+from .functions import get_urls_of_xml, removeBrand, set_category, save_images, save_product, printRed, printGreen
 
 # 
 import os
@@ -58,9 +58,9 @@ def get_product_data(url):
             feature.value = b.text
             feature.save()
         
-        print("Loaded: " + name)
+        printGreen("Loaded: " + name)
     except Exception as e:
-        print("Error loading " + url)
+        printRed("Error loading " + url)
         print(e)
 
 test_data = [
@@ -72,7 +72,7 @@ test_data = [
 
 
 def load_from_startech():
-    print("Loading from startech")
+    print("\n\nLoading from startech")
     shop = Shop.objects.get_or_create(name="Startech", href="https://www.startech.com.bd/", logo="https://www.startech.com.bd/image/catalog/logo.png")[0]
     links_data_arr = get_urls_of_xml("https://www.startech.com.bd/sitemap.xml", "xml")
     # links_data_arr = test_data
@@ -81,8 +81,8 @@ def load_from_startech():
     #     links_data_arr = links_data_arr[1412:1512]
     # else:
     #     links_data_arr = links_data_arr[1412:]
-    links_data_arr = links_data_arr[1512:1612]
+    links_data_arr = links_data_arr[1490:]
     with concurrent.futures.ThreadPoolExecutor(max_workers=8) as executor:
         executor.map(get_product_data, links_data_arr)
 
-    print(f"Loading from Startech Complete")
+    printGreen(f"Loading from Startech Complete")

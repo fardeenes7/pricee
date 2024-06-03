@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup
 import requests
 from django.template.defaultfilters import slugify
 from ..models import Product, Category, SubCategory, Feature, Link, Image, Shop
-from .functions import get_urls_of_xml, removeBrand, set_category, save_images, save_product
+from .functions import get_urls_of_xml, removeBrand, set_category, save_images, save_product, printGreen, printRed
 from alive_progress import alive_bar
 
 import os
@@ -65,23 +65,23 @@ def get_product_data(url):
                 feature.value = value
                 feature.save()
                     
-        # print('Loaded : ' + name)
+        printGreen('Loaded : ' + name)
 
     except Exception as e:
-        # print("Error loading " + url)
-        # print(e)
+        printRed("Error loading " + url)
+        print(e)
         pass
 
 
 
 def load_from_techland():
-    print("Loading from Techland")
+    print("\n\nLoading from Techland")
     links_data_arr = get_urls_of_xml("https://www.techlandbd.com/sitemaps/product-sitemap.xml", "xml")
     # if DEBUG == 'True':
     #     links_data_arr = links_data_arr[:100]
-    for link in links_data_arr:
-        get_product_data(link)
-    # with concurrent.futures.ThreadPoolExecutor(max_workers=8) as executor:
-    #     executor.map(get_product_data, links_data_arr)
-    print("Loading from Techland Complete")
+    # for link in links_data_arr:
+    #     get_product_data(link)
+    with concurrent.futures.ThreadPoolExecutor(max_workers=8) as executor:
+        executor.map(get_product_data, links_data_arr)
+    printGreen("Loading from Techland Complete")
 

@@ -24,7 +24,6 @@ INSTALLED_APPS = [
     'django_filters',
     'management',
     'user',
-    'v1',
     'v2',
 ]
 

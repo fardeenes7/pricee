@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup
 import requests
 from django.template.defaultfilters import slugify
 from v2.models import Product, Category, SubCategory, Link, Image, Feature, Shop
-from .functions import get_urls_of_xml, removeBrand, set_category, save_images, save_product
+from .functions import get_urls_of_xml, removeBrand, set_category, save_images, save_product, printGreen, printRed
 
 import os
 from dotenv import load_dotenv
@@ -58,20 +58,20 @@ def get_product_data(url):
                 feature = Feature.objects.filter(product=product, name=f1)[0]
             feature.value = f2
             feature.save()
-        print("Loaded: " + name)
+        printGreen("Loaded: " + name)
     except Exception as e:
-        print("Error loading "+ url)
+        printRed("Error loading "+ url)
         print(e)
 
 
 def load_from_ryans():
-    print("Loading from Ryans")
+    print("\n\nLoading from Ryans")
     
     links_data_arr = get_urls_of_xml("https://www.ryanscomputers.com/product-sitemap.xml", "xml")
     # if DEBUG == 'True':
     #     links_data_arr = links_data_arr[:100]
-    links_data_arr = links_data_arr[:100]
+    # links_data_arr = links_data_arr[:100]
     with concurrent.futures.ThreadPoolExecutor(max_workers=8) as executor:
         executor.map(get_product_data, links_data_arr)
-    print("Loading from Ryans Complete")
+    printGreen("Loading from Ryans Complete")
 

@@ -92,3 +92,11 @@ def get_color(text):
         if color in text:
             return color
     return ""
+
+
+def printRed(skk):
+    print("\033[91m {}\033[00m" .format(skk))
+ 
+ 
+def printGreen(skk):
+    print("\033[92m {}\033[00m" .format(skk))
