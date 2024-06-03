@@ -170,7 +170,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # ]
 
 STATIC_URL = 'static/'
-DEBUG = os.environ.get('DEBUG')
+DEBUG = True if os.environ.get('DEBUG') == 'True' else False
 if DEBUG:
     STATICFILES_DIRS = [
         os.path.join(BASE_DIR, 'static')
