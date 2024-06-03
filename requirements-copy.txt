@@ -15,7 +15,6 @@ django-admin-volt
 django-compat
 django-cors-headers
 django-filter
-django-forestadmin
 django-ipware
 django-templated-mail
 djangorestframework
