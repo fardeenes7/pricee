@@ -6,6 +6,8 @@ DB_URL = os.environ.get('DATABASE_URL')
 
 DEBUG = False
 
+ROOT_URLCONF = 'pricee.urls'
+
 ALLOWED_HOSTS = ['*']
 
 DATABASES = {
